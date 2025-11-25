@@ -10,4 +10,4 @@ The metabolic scores were trained using standardised metabolic levels using z-sc
 
 R:
 
-preprocessing_metabolites.R: which will read the dataframe (as .rds format) containing the metabolite levels, and will filter it to the metabolites that exsit in the metabolite scores we created using standardised metabolic levels. The metabolite dataframe should have rows as participant ID and columns as metabolite names.
+preprocessing_metabolites.R: which will read the dataframe (as .rds format) containing the metabolite levels, and will filter it to the metabolites that with non-zero coefficients from our LASSO training model. The metabolite dataframe should have rows as participant ID and columns as metabolite names.

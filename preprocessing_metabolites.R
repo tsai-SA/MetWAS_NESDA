@@ -127,3 +127,18 @@ ggsave(filename=paste0(out_dir, cohort, "_", analysis, "_met_preproc_std.png"),m
 outfile <- paste0(out_dir, cohort, "_", analysis, "_preproc_metabolites.rds")
 saveRDS(met_std, outfile)
 sink()
+
+
+
+############example
+###metabolites should rds format with metabolites as columns and participant ID as rows
+###list should be a vector with a list of metabolites from LASSO(non-zero coefficients)
+###analysis is either sig(plot unstandardised vs standardised distribution of metabolites) or mrs(just standardisation)
+
+Rscript preprocessing_metabolites.R \
+  --cohort "UKB" \
+  --metabolites "/Users/Desktop/test_met_data.rds" \
+  --list "/Users/Desktop/probes_list.rds" \
+  --id_column "ID" \
+  --analysis "mrs" \
+  --outdir "/Users/angelatsaii/Desktop/"

@@ -28,7 +28,7 @@ Rscript preprocessing_metabolites.R \
   --outdir "/Users/Desktop/"
 
 ## Calculating metabolic scores
-The R script MS_calc.R: will calculate metabolic scores for participants.
+The R script MetS_calc.R: will calculate metabolic scores for participants.
 Arguments:
 --cohort : Cohort name
 --std_met : The file path for the preprocessed DNAm file from process_DNAm_MRS.R, e.g /Users/data/DNAm/AD_MRS/GS_mrs_DNAm_preproc.txt

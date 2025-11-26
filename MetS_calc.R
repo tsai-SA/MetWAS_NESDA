@@ -177,7 +177,7 @@ ggsave(paste0(outdir, cohort, "_AD_MS_overalldist.png"), MS_dist, width = 8, hei
 
 # look at Distribution in AD exposed and AD not exposed (violin plots)
 
-if (endsWith(pheno, '.rds')){
+if (endsWith(pheno_filepath, '.rds')){
 ad_pheno <- readRDS(pheno_filepath)
 } else {
   stop('Unsupported phenotype file, please provide the phenotype as a .rds file')

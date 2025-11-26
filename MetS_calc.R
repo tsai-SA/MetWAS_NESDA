@@ -30,10 +30,10 @@ option_list <- list(
 args = commandArgs(trailingOnly=TRUE)
 opt <- parse_args(OptionParser(option_list=option_list), args=args)
 cohort <- opt$cohort
-std_met=opt$std_met
-ukb_weights=opt$ukb_weights # Weights file from GS
+std_met_filepath=opt$std_met
+ukb_weights_filepath=opt$ukb_weights # Weights file from GS
 id_col <- opt$id_column # Vector of identifier columns 
-pheno=opt$pheno
+pheno_filepath=opt$pheno
 outdir <- opt$outdir
 
 # Create a log file
@@ -49,9 +49,9 @@ print(paste0('Output to be saved in: ', outdir))
 
 ###############################################################################
 
-std_met <- readRDS(std_met) 
+std_met <- readRDS(std_met_filepath) 
 print(paste0('The metabolite file has data for ', nrow(std_met), ' participants and ', std_met %>% select(-ID) %>% ncol(), " Metabolites"))  # Remove ID col
-ukb_weights <- readRDS(ukb_weights) 
+ukb_weights <- readRDS(ukb_weights_filepath) 
 print(paste0('The weights file has weights for ', nrow(weights), ' Metabolites'))
 
 ###############################################################################
@@ -177,7 +177,7 @@ ggsave(paste0(outdir, cohort, "_AD_MS_overalldist.png"), MS_dist, width = 8, hei
 # look at Distribution in AD exposed and AD not exposed (violin plots)
 
 if (endsWith(pheno, '.rds')){
-ad_pheno <- readRDS(pheno)
+ad_pheno <- readRDS(pheno_filepath)
 } else {
   stop('Unsupported phenotype file, please provide the phenotype as a .rds file')
 }

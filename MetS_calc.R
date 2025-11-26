@@ -34,7 +34,7 @@ std_met_filepath=opt$std_met
 ukb_weights_filepath=opt$ukb_weights # Weights file from GS
 id_col <- opt$id_column # Vector of identifier columns 
 pheno_filepath=opt$pheno
-outdir_filepath <- opt$outdir
+outdir <- opt$outdir
 
 # Create a log file
 sink(paste0(outdir, cohort, "_AD_MS.log"))
@@ -214,7 +214,7 @@ ggsave(paste0(outdir, cohort, "_AD_MS_phenodist.png"), MS_pheno_dists, width = 8
 # Saving the metabolic score 
 
 ###############################################################################
-outfile <- paste0(outdir_filepath, cohort, '_AD_MetS.txt')
+outfile <- file.path(outdir, paste0(cohort, "_AD_MetS.txt"))
 print(paste0('Saving the methylation risk score to ', outfile))
 
 colnames(MetS)[2] <- 'AD_MetS'

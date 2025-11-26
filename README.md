@@ -28,7 +28,8 @@ Rscript preprocessing_metabolites.R \
   --outdir "/Users/Desktop/"
 
 ## Calculating metabolic scores
-The R script MetS_calc.R: will calculate metabolic scores for each participant.
+The R script MetS_calc.R will read the rds file from preprocessing_metabolites.R, the LASSO weights provided by us, and the antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure). Then, it will calculate metabolic score for each participant.
+
 Arguments:
 --cohort : Cohort name, e.g 'UKB' or 'NESDA' \
 --std_met : The file path for the standardised metabolite file from preprocessing_metabolites.R \

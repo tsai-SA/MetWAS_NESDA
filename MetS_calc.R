@@ -214,8 +214,10 @@ ggsave(paste0(outdir, cohort, "_AD_MS_phenodist.png"), MS_pheno_dists, width = 8
 # Saving the metabolic score 
 
 ###############################################################################
-outfile <- file.path(outdir, paste0(cohort, "_AD_MetS.txt"))
+outfile <- file.path(outdir, paste0(cohort, "_AD_MetS.rds"))
 print(paste0('Saving the methylation risk score to ', outfile))
 
 colnames(MetS)[2] <- 'AD_MetS'
-write.table(MetS, outfile, row.names = F, quote = F)
+saveRDS(MetS, outfile)
+sink()
+

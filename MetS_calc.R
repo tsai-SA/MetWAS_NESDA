@@ -40,7 +40,8 @@ outdir <- opt$outdir
 sink(paste0(outdir, cohort, "_AD_MS.log"))
 print(paste0('Calculating metabolic scores for ', cohort))
 print(paste0('Read in the processed metabolite file from: ', std_met_filepath))
-print(paste0('Read in the weights file from: ', ukb_weights))
+print(paste0('Read in the weights file from: ', ukb_weights_filepath))
+print(paste0('Read in the pheno file from: ', pheno_filepath))
 print(paste0('Output to be saved in: ', outdir))
 
 ###############################################################################

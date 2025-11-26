@@ -99,7 +99,7 @@ missing_plot <- ggplot(missing_percentage %>% filter(MissingPercentage > 50),
 
 missingness_weights <- merge(missing_percentage, ukb_weights, by = 'Metabolites')
 
-missing_weights_plt <- ggplot(missingness_weights, aes(x = MissingPercentage, y = abs(Weight))) + 
+missing_weights_plt <- ggplot(missingness_weights, aes(x = MissingPercentage, y = abs(weights))) + 
   geom_point() + 
   theme_minimal() + 
   labs(x = '% of Missingness', y ='MS weight', 

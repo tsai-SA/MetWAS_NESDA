@@ -16,6 +16,7 @@ parse <- OptionParser()
 
 # setting up options for the filepaths to the correct files
 # ukb_weights contain two columns: Metabolites and weights
+# pheno should have two columns: ID and antidep_expo
 
 option_list <- list(
   make_option('--cohort', type='character', help="Cohort", action='store'),
@@ -181,25 +182,25 @@ ad_pheno <- readRDS(pheno)
   stop('Unsupported phenotype file, please provide the phenotype as a .rds file')
 }
 
-if('antidep' %in% colnames(ad_pheno) == FALSE){
+if('antidep_expo' %in% colnames(ad_pheno) == FALSE){
   stop('No antidep column in the phenotype file')
 } else {
   print('antidep column in the phenotype file')
 }
 
-ad_pheno <- ad_pheno %>% filter(!is.na(antidep)) # remove missing values if there are any 
+ad_pheno <- ad_pheno %>% filter(!is.na(antidep_expo)) # remove missing values if there are any 
 
 print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ': Number of cases: ',
              nrow(ad_pheno %>% 
-                    filter(antidep==1)), 
+                    filter(antidep_expo==1)), 
              ' Number of controls: ',
              nrow(ad_pheno%>% 
-                    filter(antidep==0))))
+                    filter(antidep_expo==0))))
 
 ad_pheno_MS <- merge(ad_pheno, MetS, by = id_col)
 
 print('Plotting MetS distributions for AD exposure cases and controls ')
-MS_pheno_dists <- ggplot(ad_pheno_MS, aes(x = weighted_sum, fill = as.factor(antidep))) + 
+MS_pheno_dists <- ggplot(ad_pheno_MS, aes(x = weighted_sum, fill = as.factor(antidep_expo))) + 
   geom_histogram(alpha = 0.8) + 
   theme_minimal() + 
   labs(x = 'Metabolic Profile Score', y = 'Count', fill = 'AD use') +

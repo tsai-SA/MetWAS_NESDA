@@ -15,6 +15,8 @@ library(ggpubr)
 parse <- OptionParser()
 
 # setting up options for the filepaths to the correct files
+# ukb_weights contain two columns: Metabolites and weights
+
 option_list <- list(
   make_option('--cohort', type='character', help="Cohort", action='store'),
   make_option('--std_met', type='character', help="The filepath for standardised metabolite file", action='store'),
@@ -129,7 +131,7 @@ print('Calculating the metabolic scores')
 # and then calculate a weighted sum of all the metabolites per ID
 
 MetS <- long_std_met %>% group_by(!!sym(id_col)) %>%
-  summarise(weighted_sum = sum(ukb_weights*Mval, na.rm = T)) %>% as.data.frame()
+  summarise(weighted_sum = sum(weights*Mval, na.rm = T)) %>% as.data.frame()
 
 print(paste0('Metabolic scores calculated for ', nrow(MetS), ' participants in the ', cohort, ' cohort'))
 

@@ -11,11 +11,11 @@ The metabolic scores were trained using standardised metabolic levels using z-sc
 The R script preprocessing_metabolites.R will read the dataframe (as .rds format) containing the metabolite levels, and will filter it to the metabolites that with non-zero coefficients from our LASSO training model. The metabolite dataframe should have rows as participant ID and columns as metabolite names.
 
 Arguments:
---cohort : Cohort name, e.g 'UKB' or 'NESDA'
---metabolites : The file path to the metabolite file (rds format)
---list : The file path for the list of metabolites from LASSO(non-zero coefficients) provided by us 
---id_column : The name of the participant identifier column in the data 
---analysis: Either 'sig' (plot unstandardised vs standardised distribution of metabolites) or 'mrs' (just standardisation)
+--cohort : Cohort name, e.g 'UKB' or 'NESDA' \
+--metabolites : The file path to the metabolite file (rds format) \
+--list : The file path for the list of metabolites from LASSO(non-zero coefficients) provided by us \
+--id_column : The column name of the identifier column (default == ID) \
+--analysis: Either 'sig' (plot unstandardised vs standardised distribution of metabolites) or 'mrs' (just standardisation) \
 --outdir : The directory where the outputs will be saved
 
 Example:
@@ -28,13 +28,21 @@ Rscript preprocessing_metabolites.R \
   --outdir "/Users/Desktop/"
 
 ## Calculating metabolic scores
-The R script MetS_calc.R: will calculate metabolic scores for participants.
+The R script MetS_calc.R: will calculate metabolic scores for each participant.
 Arguments:
---cohort : Cohort name
---std_met : The file path for the preprocessed DNAm file from process_DNAm_MRS.R, e.g /Users/data/DNAm/AD_MRS/GS_mrs_DNAm_preproc.txt
---id_column : The column name of the identifier column (default == IID)
---ukb_weights : The file path for the MRS weights files provided by GS e.g /Users/data/DNAm/GS_AD_MRS_weights.txt
---pheno : The file path to the antidepressant exposure phenotype file for your cohort. Script can read in either a .csv, or .txt file and should follow a format of FID(Optional), IID (Required), and antidep, with antidep being coded as 0 (no exposure) and 1 (exposure). e.g /Users/data/phenos/AD_pheno.csv
+--cohort : Cohort name, e.g 'UKB' or 'NESDA' \
+--std_met : The file path for the standardised metabolite file from preprocessing_metabolites.R \
+--id_column : The column name of the identifier column (default == ID) \
+--ukb_weights : The file path for the metabolite weights file provided by us \
+--pheno : The file path to the antidepressant exposure phenotype file for your cohort (rds format). The file should have two columns: ID and antidep_expo with antidep_expo coded as 0 (no exposure) and 1 (exposure) \
+--outdir : The directory where the results and graphs will be saved 
 
---outdir : The directory where the results and graphs will be saved e.g /Users/data/DNAm/AD_MRS/
+Example:
+Rscript MetS_calc.R \
+--cohort "UKB" \
+--std_met "/Users/Desktop/UKB_mrs_preproc_metabolites.rds" \
+--id_column "ID" \
+--ukb_weights "/Users/Desktop/lasso_coef.rds" \
+--pheno "/Users/Desktop/pheno.rds" \
+--outdir "/Users/Desktop/"
 

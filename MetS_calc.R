@@ -215,7 +215,7 @@ ggsave(paste0(outdir, cohort, "_AD_MS_phenodist.png"), MS_pheno_dists, width = 8
 
 ###############################################################################
 outfile <- file.path(outdir, paste0(cohort, "_AD_MetS.rds"))
-print(paste0('Saving the methylation risk score to ', outfile))
+print(paste0('Saving the metabolic score to ', outfile))
 
 colnames(MetS)[2] <- 'AD_MetS'
 saveRDS(MetS, outfile)

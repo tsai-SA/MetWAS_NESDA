@@ -27,7 +27,9 @@ Rscript preprocessing_metabolites.R \
   --analysis "mrs" \
   --outdir "/Users/Desktop/"
 
-## Calculating metabolic scores
+## Residualise metabolites against potential confounders
+
+## Calculate metabolic scores
 The R script MetS_calc.R will read the rds file from preprocessing_metabolites.R, the LASSO weights provided by us, and the antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure). Then, it will calculate metabolic score for each participant.
 
 Arguments:
@@ -46,4 +48,16 @@ Rscript MetS_calc.R \
 --ukb_weights "/Users/Desktop/lasso_coef.rds" \
 --pheno "/Users/Desktop/pheno.rds" \
 --outdir "/Users/Desktop/"
+
+## Predictive models
+
+Key elements of the model:
+
+Phenotype : Antidepressant exposure phenotype (0/1)
+Predictor : Metabolic scores output from MetS_calc.R
+
+General Output
+
+We would like the coefficients of the model, alongside the standard errors, t values, P values. We will assess the model's performance using AUC, including ROC and PR curves.
+
 

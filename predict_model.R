@@ -123,4 +123,41 @@ outfile <- file.path(outdir, paste0(cohort, "_MetS_AD_coefficients.rds"))
 print(paste0('Saving the model coefficients to ', outfile))
 saveRDS(assoc_coefs, outfile)
 
+###############################################################################
 
+# Calculating the AUC and ROC graph
+
+###############################################################################
+
+predicted_probs <- predict(assoc_mod, type = 'response')
+
+# Take the true outcomes (MetS_pheno$antidep)
+# and the predicted probabilities for the 1 ('case') class
+# returns false positive and true positive rates for different classification thresholds
+
+roc_curve <- roc(MetS_pheno$antidep, predicted_probs)
+auc_value <- auc(roc_curve)
+
+# save ROC curve object for plotting all cohorts together
+print(paste0('Saving the ROC curve object for plotting all cohorts together to rds object: ', outdir, cohort, '_roc_curve.rds'))
+saveRDS(roc_curve, paste0(outdir, cohort, '_roc_curve.rds'))
+
+# ROC Graph 
+print(paste0('Saving the ROC curve for the cohort alone to ', outdir, cohort, '_assoc_ROC_curve.pdf'))
+cairo_pdf(file = paste0(outdir, cohort, '_assoc_ROC_curve.pdf'), width = 8, height = 6)
+plot.roc(roc_curve, col = "blue", lwd =2, main = paste0('ROC Curve: ', cohort))
+dev.off()
+
+###############################################################################
+
+# Precision Recall Curve 
+
+###############################################################################
+
+pr_curve <- pr.curve(MetS_pheno$antidep, predicted_probs, curve = T)
+
+cairo_pdf(file = paste0(outdir, cohort, '_assoc_precision_recall.pdf'), width = 8, height = 6)
+plot(pr_curve, main= paste0(cohort, ' : Precision Recall Curve'), col = 'red')
+dev.off()
+
+sink()

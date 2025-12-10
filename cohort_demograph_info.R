@@ -23,7 +23,7 @@ option_list <- list(
   make_option('--id_column', type = 'character', default="ID", help = "Column names of identifier column in phenotype and covariate files", action = 'store'),
   make_option('--ms', type = 'character', help = 'File path to metabolic score file (made using MetS_calc.R)'),
   make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file, column names (ID and antidep),
-  make_option('--demo', type = 'character', help = 'File path to demographics file, column names (age, sex_coded, bmi, smoking status, drinking status, and mdd),
+  make_option('--demo', type = 'character', help = 'File path to demographics file, column names (age, sex, bmi, and mdd),
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
 )
 
@@ -33,12 +33,12 @@ cohort <- opt$cohort
 id_col <- opt$id_column # Vector of identifier columns 
 pheno_fp=opt$pheno # AD exposure (phenotype of cohort)
 MetS_fp=opt$ms # AD MetS (predictor) 
-demo_fp=opt$demo # Demographics 
+demo_fp=opt$demo # Demographic variables
 outdir <- opt$outdir # File path of output directory
 
 # sinking all output to a log file 
 
-sink(paste0(outdir, cohort, "_MRS_demographics.log"))
+sink(paste0(outdir, cohort, "_cohort_demographics.log"))
 
 
 ###############################################################################
@@ -49,17 +49,13 @@ sink(paste0(outdir, cohort, "_MRS_demographics.log"))
 
 # read in file with additional demographic information for manuscript 
 
-demographics <- read.table(demo_fp, header = T)
-MRS <- read.table(MRS_fp, header = T)
+demographics <- readRDS(demo_fp)
+AD_MetS <- readRDS(MetS_fp)
 
-# support phenotype .csv files or .txt files 
-
-if (endsWith(pheno_fp, '.csv')){
-  ad_pheno <- read.csv(pheno_fp, header = T)
-} else if (endsWith(pheno_fp, '.txt')) {
-  ad_pheno <- read.table(pheno_fp, header = T)
+if (endsWith(pheno_fp, '.rds')){
+  ad_pheno <- readRDS(pheno_fp)
 } else {
-  stop('Unsupported phenotype file, please provide the phenotype as a .csv or .txt file')
+  stop('Unsupported phenotype file, please provide the phenotype as a .rds')
 }
 
 
@@ -69,10 +65,10 @@ if (endsWith(pheno_fp, '.csv')){
 
 ###############################################################################
 
-if('AD_MRS' %in% colnames(MRS) == FALSE){
-  stop('No AD_MRS column in the MRS file')
+if('MetS' %in% colnames(AD_MetS) == FALSE){
+  stop('No MetS column in the AD_MetS file')
 } else {
-  print('AD_MRS column in the MRS file')
+  print('MetS column in the AD_MetS file')
 }
 
 
@@ -91,10 +87,10 @@ table(is.na(ad_pheno$antidep))
 ad_pheno <- ad_pheno %>% filter(!is.na(antidep))
 
 # Demographics file 
-# age, sex, bmi, smoking behaviours and MDD (optional/if applicable)
+# If applicable: age, sex, bmi, and mdd
 # load in vector of required demographic variables 
 
-req_demo_vars <- c('age', 'sex_coded', 'bmi', 'ever_smoke')
+req_demo_vars <- c('age', 'sex', 'bmi', 'mdd')
 if(all(req_demo_vars %in% colnames(demographics))){
   print('All demographic variables loaded in and named correctly')
 } else {
@@ -103,52 +99,9 @@ if(all(req_demo_vars %in% colnames(demographics))){
     print(paste0('Incorrect/missing columns: ', cols_missing))
 }
 
-# smoking 
-# recode the smoking as current, former and never smoker 
+# merge with the AD_MetS file 
 
-# Question: Have you ever smoked tobacco? 
-# 1- Yes Current
-# 2 - Yes but stopped in last 12 months 
-# 3 - Yes but stopped more than 12 months ago
-# 4 No Never smoked 
-# 5 (NA values? )
-
-
-print('Smoking variable')
-table(demographics$ever_smoke)
-
-if (!("character" %in% class(demographics$ever_smoke))) {
-print('Formatting the smoking variable to Current/Former/Never Smokers')
-demographics <- demographics %>% 
-  mutate(smoking_var = case_when(
-    ever_smoke == 1 ~ 'Current', 
-    ever_smoke == 2 ~ 'Former', 
-    ever_smoke == 3 ~ 'Former', 
-    ever_smoke == 4 ~ 'Never', 
-    TRUE ~ NA_character_))
-
-print('Smoking variable named')
-table(demographics$smoking_var)
-
-} else {
-  print('Smoking variable is already formatted')
-  demographics$smoking_var <- demographics$ever_smoke
-  table(demographics$smoking_var)
-}
-
-# sex 
-
-print('Sex variable')
-table(demographics$sex_coded)
-demographics <- demographics %>%
-  mutate(sex_name = ifelse(
-    sex_coded == 0, 'Female', 'Male'))
-print('Following coding of sex variable, 0 = Female and 1 = Male')
-table(demographics$sex_name)
-
-# merge with the MRS file 
-
-demographics <- merge(demographics, MRS, by= id_col, all = TRUE)
+demographics <- merge(demographics, AD_MetS, by= id_col, all = TRUE)
 
 ###############################################################################
 
@@ -158,7 +111,6 @@ demographics <- merge(demographics, MRS, by= id_col, all = TRUE)
 
 # create a summary of this phenotype 
 # summarise function with the continuous covs 
-# ratios for the discrete covs (sex, smoking)
 
 # summary function for cases and controls 
 # phenotype is the phenotype column name in the phenotype file 
@@ -174,80 +126,41 @@ phenotype_summary <- function(phenotype, file) {
                            ' (', signif(sd(age, na.rm = T),3), ')'), 
               bmi = paste0(signif(mean(bmi, na.rm = T),3), ' (', 
                            signif(sd(bmi, na.rm = T),3),')'), 
-              AD_MRS= paste0(signif(mean(AD_MRS, na.rm = T),3),' (', 
-                                signif(sd(AD_MRS, na.rm = T),3), ')'), 
+              MetS = paste0(signif(mean(MetS, na.rm = T),3),' (', 
+                                signif(sd(MetS, na.rm = T),3), ')'), 
               
               n = n()) %>%
-    
-    mutate(current_smoking= c(file %>% group_by(across(all_of(c(phenotype, 'smoking_var')))) %>%
-                                summarise(count = n()) %>%
-                                mutate(percentage = (count/sum(count))*100) %>%
-                                mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                                filter(!!sym(phenotype) == 0 & smoking_var == 'Current') %>% 
-                                pull(val),
-                              file %>% group_by(across(all_of(c(phenotype, 'smoking_var')))) %>% 
-                                summarise(count = n()) %>%
-                                mutate(percentage = (count/sum(count))*100) %>%
-                                mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                                filter(!!sym(phenotype) == 1 & smoking_var == 'Current') %>% 
-                                pull(val)), 
-           
-           former_smoking= c(file %>% group_by(across(all_of(c(phenotype, 'smoking_var')))) %>% 
-                               summarise(count = n()) %>%
-                               mutate(percentage = (count/sum(count))*100) %>%
-                               mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                               filter(!!sym(phenotype) == 0 & smoking_var == 'Former') %>% 
-                               pull(val),
-                             file %>% group_by(across(all_of(c(phenotype, 'smoking_var')))) %>% 
-                               summarise(count = n()) %>%
-                               mutate(percentage = (count/sum(count))*100) %>%
-                               mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                               filter(!!sym(phenotype) == 1 & smoking_var == 'Former') %>% 
-                               pull(val)) , 
-           
-           never_smoking= c(file %>% group_by(across(all_of(c(phenotype, 'smoking_var')))) %>% 
-                              summarise(count = n()) %>%
-                              mutate(percentage = (count/sum(count))*100) %>%
-                              mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                              filter(!!sym(phenotype) == 0 & smoking_var == 'Never') %>% 
-                              pull(val),
-                            file %>% group_by(across(all_of(c(phenotype, 'smoking_var')))) %>% 
-                              summarise(count = n()) %>%
-                              mutate(percentage = (count/sum(count))*100) %>%
-                              mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                              filter(!!sym(phenotype) == 1 & smoking_var == 'Never') %>% 
-                              pull(val)), 
            
            Female = c(file %>% 
-                        group_by(across(all_of(c(phenotype, 'sex_name')))) %>% 
+                        group_by(across(all_of(c(phenotype, 'sex')))) %>% 
                         summarise(count = n()) %>% 
                         mutate(percentage = (count/sum(count))*100) %>%
                         mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                        filter(!!sym(phenotype)==0 & sex_name == 'Female') %>% 
+                        filter(!!sym(phenotype)==0 & sex == 'Female') %>% 
                         pull(val), 
-                      file %>% group_by(across(all_of(c(phenotype, 'sex_name')))) %>% 
+                      file %>% group_by(across(all_of(c(phenotype, 'sex')))) %>% 
                         summarise(count = n()) %>% 
                         mutate(percentage = (count/sum(count))*100) %>%
                         mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                        filter(!!sym(phenotype)==1 & sex_name == 'Female') %>% 
+                        filter(!!sym(phenotype)==1 & sex == 'Female') %>% 
                         pull(val)), 
            Male = c(file %>% 
-                      group_by(across(all_of(c(phenotype, 'sex_name')))) %>% 
+                      group_by(across(all_of(c(phenotype, 'sex')))) %>% 
                       summarise(count = n()) %>% 
                       mutate(percentage = (count/sum(count))*100) %>%
                       mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                      filter(!!sym(phenotype)==0 & sex_name == 'Male') %>% 
+                      filter(!!sym(phenotype)==0 & sex == 'Male') %>% 
                       pull(val), 
-                    file %>% group_by(across(all_of(c(phenotype, 'sex_name')))) %>% 
+                    file %>% group_by(across(all_of(c(phenotype, 'sex')))) %>% 
                       summarise(count = n()) %>% 
                       mutate(percentage = (count/sum(count))*100) %>%
                       mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                      filter(!!sym(phenotype)==1 & sex_name == 'Male') %>% 
+                      filter(!!sym(phenotype)==1 & sex == 'Male') %>% 
                       pull(val))) %>% 
     as.data.frame()
   
-  summary <- summary %>% select(phenotype, n, age ,bmi,  Female, Male, current_smoking, former_smoking, never_smoking, AD_MRS)
-  colnames(summary) <- c(phenotype, 'N', 'Age (SD)','BMI (SD)', 'Sex Female (%)', 'Sex Male (%)', 'Current smoker (%)', 'Former smoker (%)', 'Never smoker (%)', 'AD MRS (%)')
+  summary <- summary %>% select(phenotype, n, age ,bmi,  Female, Male, MetS)
+  colnames(summary) <- c(phenotype, 'N', 'Age (SD)','BMI (SD)', 'Sex Female (%)', 'Sex Male (%)', 'AD MetS (%)')
   return(summary)
 }
 

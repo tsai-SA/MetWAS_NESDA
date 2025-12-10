@@ -23,6 +23,7 @@ option_list <- list(
   make_option('--id_column', type = 'character', default="ID", help = "Column names of identifier column", action = 'store'),
   make_option('--ms', type = 'character', help = 'File path to metabolic score file (made using MetS_calc.R)'),
   make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file'),
+  make_option('--covs', type = 'character', help = 'File path to covariate file'),
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
 )
 
@@ -32,6 +33,7 @@ cohort <- opt$cohort
 id_col <- opt$id_column # Vector of identifier columns 
 pheno_fp=opt$pheno # AD exposure (phenotype of cohort)
 MetS_fp=opt$ms # AD MetS (predictor) 
+covs_fp=opt$covs 
 outdir <- opt$outdir # File path of output directory
 
 # sinking all output to a log file 
@@ -82,17 +84,23 @@ print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ' : N
              nrow(ad_pheno%>% 
                     filter(antidep==0))))
 
+all_covs <- read.table(covs_fp, header = T)
+
+print(paste0("Covariates read in ", paste(colnames(all_covs %>% dplyr::select(-all_of(id_col))), collapse = ", ")))
+
 #merge the phenotype and MetS file together 
 
 MetS_pheno <- merge(MetS, ad_pheno, by = id_col)
+MetS_pheno_covs <- merge(MetS_pheno, all_covs, by = id_col)
+
 
 # logging phenotype characteristics after merging 
 
 print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ' after merging with MetS and pheno: Number of cases: ',
-             nrow(MetS_pheno %>% 
+             nrow(MetS_pheno_covs %>% 
                     filter(antidep==1)), 
              ' \n Number of controls: ',
-             nrow(MetS_pheno %>% 
+             nrow(MetS_pheno_covs %>% 
                     filter(antidep==0))))
 
 ###############################################################################
@@ -106,9 +114,9 @@ print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ' aft
 # Outcome - Antidepressant exposure phenotype 
 # Predictor - Antidepressant MetS (from MetS_calc.R)
 
-MetS_pheno$antidep <- as.factor(MetS_pheno$antidep)
+MetS_pheno_covs$antidep <- as.factor(MetS_pheno_covs$antidep)
 
-assoc_mod <- glm(antidep ~ scale(AD_MetS), family=binomial (link=logit), data = MetS_pheno)
+assoc_mod <- glm(antidep ~ scale(AD_MetS), family=binomial (link=logit), data = MetS_pheno_covs)
 
 # Extract the effect estimates, standard errors and p-value 
 warnings()
@@ -131,11 +139,11 @@ saveRDS(assoc_coefs, outfile)
 
 predicted_probs <- predict(assoc_mod, type = 'response')
 
-# Take the true outcomes (MetS_pheno$antidep)
+# Take the true outcomes (MetS_pheno_covs$antidep)
 # and the predicted probabilities for the 1 ('case') class
 # returns false positive and true positive rates for different classification thresholds
 
-roc_curve <- roc(MetS_pheno$antidep, predicted_probs)
+roc_curve <- roc(MetS_pheno_covs$antidep, predicted_probs)
 auc_value <- auc(roc_curve)
 
 # save ROC curve object for plotting all cohorts together
@@ -154,7 +162,7 @@ dev.off()
 
 ###############################################################################
 
-pr_curve <- pr.curve(MetS_pheno$antidep, predicted_probs, curve = T)
+pr_curve <- pr.curve(MetS_pheno_covs$antidep, predicted_probs, curve = T)
 
 cairo_pdf(file = paste0(outdir, cohort, '_assoc_precision_recall.pdf'), width = 8, height = 6)
 plot(pr_curve, main= paste0(cohort, ' : Precision Recall Curve'), col = 'red')

@@ -28,7 +28,11 @@ Rscript preprocessing_metabolites.R \
   --outdir "/Users/Desktop/"
 
 ## Calculate metabolic scores
-The R script MetS_calc.R will read the rds file from preprocessing_metabolites.R, the LASSO weights provided by us, and the antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure). Then, it will calculate metabolic score for each participant.
+The R script MetS_calc.R will read: 
+1) the _mrs_preproc_metabolites.rds file from preprocessing_metabolites.R,
+2) the LASSO weights provided by us
+3) the antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
+Then, it will calculate metabolic score for each participant.
 
 Arguments:
 --cohort : Cohort name, e.g 'UKB' or 'NESDA' \
@@ -48,20 +52,36 @@ Rscript MetS_calc.R \
 --outdir "/Users/Desktop/"
 
 ## Predictive models
+The R script predict_model.R will read:
+1) the _AD_MetS.rds file from MetS_calc.R output
+2) the antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
+3) a .rds file with ID and the covariates: assessment_centre, spectrometer, age, sex, smoking_status,     educatio, bmi, ethnicity, mdd, alcohol_drinking as columns.
+Then the metabolic scores created in the previous step will be used to predict antidepressant exposure status in your cohort. 
+
 
 Key elements of the model:
 
 Phenotype : Antidepressant exposure phenotype (0/1)
 Predictor : Metabolic scores output from MetS_calc.R
 Covariates: Should have rows as participant ID and columns as covariates.
-- Technical covariates = assessment centre (factor variable) and spectrometer (factor variable).
-- Demographic covariates = age (integer), sex (factor), smoking status (factor), education level (factor) , BMI (numeric), ethnicity (factor), diagnosis of major depressive disorder (factor), alcohol drinking status (factor)
-
-
-
 
 General Output
 
 We would like the coefficients of the model, alongside the standard errors, t values, P values. We will assess the model's performance using AUC, including ROC and PR curves.
 
+Arguments:
+--cohort : Cohort name, e.g 'UKB' or 'NESDA' \
+--id_column : The column name of the identifier column (default == ID) \
+--ms : file path to the _AD_MetS.rds file from MetS_calc.R output
+--pheno : The file path to the antidepressant exposure phenotype file for your cohort (rds format). The file should have two columns: ID and antidep_expo with antidep_expo coded as 0 (no exposure) and 1 (exposure) \
+--covs : The file path to the covariate file for your cohort (rds format). It should include ID and each covariate as column \
+--outdir : The directory where the results and graphs will be saved 
 
+Example:
+Rscript predict_model.R \
+--cohort "UKB" \
+--id_column "ID" \
+--ms "/Users/Desktop/UKB_AD_MetS.rds" \
+--pheno "/Users/Desktop/pheno.rds" \
+--covs "/Users/Desktop/covs.rds" \
+--outdir "/Users/Desktop/"

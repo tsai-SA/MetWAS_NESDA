@@ -1,7 +1,7 @@
 ###############################################################################
 
 # Demographic information about sample from the cohort 
-# Age, sex, BMI, smoking status, alcohol drinking status, and MDD diagnosis (where applicable)
+# age, sex, smoking_status, education, bmi, ethnicity, mdd, alcohol_drinking
 
 ###############################################################################
 
@@ -22,8 +22,8 @@ option_list <- list(
   make_option('--cohort', type='character', help="Cohort, ideally no spaces (for graphs and documentation)", action='store'),
   make_option('--id_column', type = 'character', default="ID", help = "Column names of identifier column in phenotype and covariate files", action = 'store'),
   make_option('--ms', type = 'character', help = 'File path to metabolic score file (made using MetS_calc.R)'),
-  make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file, column names (ID and antidep),
-  make_option('--demo', type = 'character', help = 'File path to demographics file, column names (age, sex, bmi, and mdd),
+  make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file, column names (ID and antidep_expo),
+  make_option('--demo', type = 'character', help = 'File path to demographics file, column names,
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
 )
 
@@ -74,23 +74,23 @@ if('MetS' %in% colnames(AD_MetS) == FALSE){
 
 # check that there is an antidep column in the file 
 
-if('antidep' %in% colnames(ad_pheno) == FALSE){
-  stop('No antidep column in the phenotype file, please change name')
+if('antidep_expo' %in% colnames(ad_pheno) == FALSE){
+  stop('No antidep_expo column in the phenotype file, please change name')
 } else {
-  print('antidep column in the phenotype file')
+  print('antidep_expo column in the phenotype file')
 }
 
 # filter out any missing phenotype values (if any?)
-print('Missing values in the antidep phenotype? ')
-table(is.na(ad_pheno$antidep))
+print('Missing values in the antidep_expo phenotype? ')
+table(is.na(ad_pheno$antidep_expo))
 
-ad_pheno <- ad_pheno %>% filter(!is.na(antidep))
+ad_pheno <- ad_pheno %>% filter(!is.na(antidep_expo))
 
 # Demographics file 
-# If applicable: age, sex, bmi, and mdd
+# If applicable: age, sex, smoking_status, educatio, bmi, ethnicity, mdd, alcohol_drinking
 # load in vector of required demographic variables 
 
-req_demo_vars <- c('age', 'sex', 'bmi', 'mdd')
+req_demo_vars <- c('age', 'sex', 'smoking_status', 'education', 'bmi', 'ethnicity', 'mdd', 'alcohol_drinking')
 if(all(req_demo_vars %in% colnames(demographics))){
   print('All demographic variables loaded in and named correctly')
 } else {
@@ -171,8 +171,8 @@ phenotype_summary <- function(phenotype, file) {
 ###############################################################################
 
 demographics_pheno <- merge(ad_pheno, demographics, by = id_col)
-cleaned_demographics_pheno <- demographics_pheno[complete.cases(demographics_pheno$antidep), ]
-demo_summary <- phenotype_summary(phenotype = 'antidep', file = cleaned_demographics_pheno)
+cleaned_demographics_pheno <- demographics_pheno[complete.cases(demographics_pheno$antidep_expo), ]
+demo_summary <- phenotype_summary(phenotype = 'antidep_expo', file = cleaned_demographics_pheno)
 
 # add MDD summary if that info is available 
 
@@ -187,39 +187,39 @@ if('mdd' %in% colnames(demographics_pheno)){
   
   print('The mdd named variable:')
   table(demographics_pheno$mdd_pheno)
-  MDD_summary <- data.table(antidep = c(0, 1),
+  MDD_summary <- data.table(antidep_expo = c(0, 1),
     Cases = c(demographics_pheno %>%
-                             group_by(across(all_of(c('antidep', 'mdd_pheno')))) %>% 
+                             group_by(across(all_of(c('antidep_expo', 'mdd_pheno')))) %>% 
                              summarise(count = n()) %>% 
                              mutate(percentage = (count/sum(count))*100) %>%
                              mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                             filter(antidep==0 & mdd_pheno == 'Case') %>% 
+                             filter(antidep_expo==0 & mdd_pheno == 'Case') %>% 
                              pull(val), 
               demographics_pheno  %>%
-                             group_by(across(all_of(c('antidep', 'mdd_pheno')))) %>% 
+                             group_by(across(all_of(c('antidep_expo', 'mdd_pheno')))) %>% 
                              summarise(count = n()) %>% 
                              mutate(percentage = (count/sum(count))*100) %>%
                              mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                             filter(antidep==1 & mdd_pheno == 'Case') %>% 
+                             filter(antidep_expo==1 & mdd_pheno == 'Case') %>% 
                              pull(val)),
   Controls = c(demographics_pheno  %>%
-                 group_by(across(all_of(c('antidep', 'mdd_pheno')))) %>% 
+                 group_by(across(all_of(c('antidep_expo', 'mdd_pheno')))) %>% 
                  summarise(count = n()) %>% 
                  mutate(percentage = (count/sum(count))*100) %>%
                  mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                 filter(antidep==0 & mdd_pheno == 'Control') %>% 
+                 filter(antidep_expo==0 & mdd_pheno == 'Control') %>% 
                  pull(val), 
                demographics_pheno  %>%
-                 group_by(across(all_of(c('antidep', 'mdd_pheno')))) %>% 
+                 group_by(across(all_of(c('antidep_expo', 'mdd_pheno')))) %>% 
                  summarise(count = n()) %>% 
                  mutate(percentage = (count/sum(count))*100) %>%
                  mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                 filter(antidep==1 & mdd_pheno == 'Control') %>% 
+                 filter(antidep_expo==1 & mdd_pheno == 'Control') %>% 
                  pull(val)
   )) %>% as.data.frame()
-  colnames(MDD_summary) <- c('antidep','MDD cases', 'MDD controls')
+  colnames(MDD_summary) <- c('antidep_expo','MDD cases', 'MDD controls')
 
-  demo_summary <- merge(demo_summary, MDD_summary, by = 'antidep')
+  demo_summary <- merge(demo_summary, MDD_summary, by = 'antidep_expo')
 
 } else{
   print('No MDD phenotype data available')

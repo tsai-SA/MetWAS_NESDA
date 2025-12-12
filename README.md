@@ -3,6 +3,7 @@ External validation of metabolome-wide association study of antidepressant expos
 
 Shared files required
 UKB_AD_met_weights.rds: Metabolites and their LASSO weights trained using UKB cohort
+
 Met_list.rds: List of metabolite with non-zero coefficient (LASSO) used in calculating the metabolic scores
 
 ## Overall summary:

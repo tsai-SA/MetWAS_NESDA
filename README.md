@@ -5,10 +5,19 @@ Shared files required
 UKB_AD_met_weights.rds: Metabolites and their LASSO weights trained using UKB cohort
 Met_list.rds: List of metabolite with non-zero coefficient (LASSO) used in calculating the metabolic scores
 
+## Overall summary:
+1) Run preprocessing_metabolites.R to standardise the metabolites
+2) Run MetS_calc.R to apply the weights from our training model to your cohort and produce a metabolic score for each participant in your cohort
+3) Run predict_model.R to use the metabolic scores created in the previous step to predict antidepressant exposure status in your cohort
+Please refer to the following information for further details and please let us know if you have any questions, thank you so much for your help!
+
 ## Metabolite preprocessing: Z-score standardisation
 The metabolic scores were trained using standardised metabolic levels using z-score standardisation. Therefore we would like the metabolic scores to be calculated also using standardised metabolic levels.
 
-The R script preprocessing_metabolites.R will read the dataframe (as .rds format) containing the metabolite levels, and will filter it to the metabolites that with non-zero coefficients from our LASSO training model. The metabolite dataframe should have rows as participant ID and columns as metabolite names.
+The R script preprocessing_metabolites.R will read :
+1) the dataframe (as .rds format) containing your cohort's metabolite levels, it should have rows as participant ID and columns as metabolite names.
+2) the Met_list.rds file which contains a list of probe metabolites provided by us
+Then the R script will filter your cohort's metabolites to the probe metabolites from our training model and scale them
 
 Arguments:
 --cohort : Cohort name, e.g 'UKB' or 'NESDA' \

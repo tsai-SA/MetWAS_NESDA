@@ -42,12 +42,12 @@ sink(paste0(outdir, cohort, "_MetS_AD_assoc.log"))
 
 ###############################################################################
 
-# Read in covariates, phenotype and MRS files 
+# Read in covariates, phenotype and MetS files 
 
 ###############################################################################
 
 MetS <- read.table(MetS_fp, header = T) # File with ID and MetS
-print(colnames(MRS))
+print(colnames(MetS))
 
 # check that there is a MetS column in the file 
 

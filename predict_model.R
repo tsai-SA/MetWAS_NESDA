@@ -46,7 +46,7 @@ sink(paste0(outdir, cohort, "_MetS_AD_assoc.log"))
 
 ###############################################################################
 
-MetS <- read.table(MetS_fp, header = T) # File with ID and MetS
+MetS <- readRDS(MetS_fp) # File with ID and AD_MetS
 print(colnames(MetS))
 
 # check that there is a MetS column in the file 

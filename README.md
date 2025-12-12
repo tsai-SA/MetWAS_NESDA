@@ -55,7 +55,7 @@ Phenotype : Antidepressant exposure phenotype (0/1)
 Predictor : Metabolic scores output from MetS_calc.R
 Covariates: Should have rows as participant ID and columns as covariates.
 - Technical covariates = assessment centre (factor variable) and spectrometer (factor variable).
-- Demographic variables = age (numeric), sex (factor), smoking status (factor), socioeconomic status (factor), education , BMI, ethnicity, diagnosis of major depressive diisorder, alcohol drinking status)
+- Demographic covariates = age (numeric), sex (factor), smoking status (factor), education level (factor) , BMI (numeric), ethnicity (factor), diagnosis of major depressive disorder (factor), alcohol drinking status (factor)
 
 
 

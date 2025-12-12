@@ -84,7 +84,7 @@ print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ' : N
              nrow(ad_pheno%>% 
                     filter(antidep==0))))
 
-all_covs <- read.table(covs_fp, header = T)
+all_covs <- readRDS(covs_fp)
 
 print(paste0("Covariates read in ", paste(colnames(all_covs %>% dplyr::select(-all_of(id_col))), collapse = ", ")))
 
@@ -114,9 +114,10 @@ print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ' aft
 # Outcome - Antidepressant exposure phenotype 
 # Predictor - Antidepressant MetS (from MetS_calc.R)
 
-MetS_pheno_covs$antidep <- as.factor(MetS_pheno_covs$antidep)
-
-assoc_mod <- glm(antidep ~ scale(AD_MetS), family=binomial (link=logit), data = MetS_pheno_covs)
+assoc_mod <- glm(as.factor(antidep) ~ scale(AD_MetS) + as.numeric(age) + as.factor(assessment_centre) +
+                 as.factor(spectrometer) + as.factor(sex) + as.factor(smoking_status) + as.factor(education) + 
+                 as.factor(ethnicity) + as.numeric(bmi) + as.factor(mdd) + as.factor(alcohol_drinking), 
+                 family=binomial (link=logit), data = MetS_pheno_covs)
 
 # Extract the effect estimates, standard errors and p-value 
 warnings()

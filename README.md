@@ -68,15 +68,9 @@ The R script predict_model.R will read:
 Then the metabolic scores created in the previous step will be used to predict antidepressant exposure status in your cohort. 
 
 
-Key elements of the model:
+Key elements of the model: Phenotype (antidepressant exposure phenotype), predictor (metabolic scores output from MetS_calc.R), covariates (should have rows as participant ID and columns as covariates)
 
-Phenotype : Antidepressant exposure phenotype (0/1)
-Predictor : Metabolic scores output from MetS_calc.R
-Covariates: Should have rows as participant ID and columns as covariates.
-
-General Output: 
-
-We would like the coefficients of the model, alongside the standard errors, t values, P values. We will assess the model's performance using AUC, including ROC and PR curves.
+General Output: We would like the coefficients of the model, alongside the standard errors, t values, P values. We will assess the model's performance using AUC, including ROC and PR curves.
 
 Arguments:
 --cohort : Cohort name, e.g 'UKB' or 'NESDA' \

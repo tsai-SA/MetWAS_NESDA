@@ -67,22 +67,22 @@ if (endsWith(pheno_fp, '.rds')){
 
 # check that there is an antidep column in the file 
 
-if('antidep' %in% colnames(ad_pheno) == FALSE){
-  stop('No antidep column in the phenotype file')
+if('antidep_expo' %in% colnames(ad_pheno) == FALSE){
+  stop('No antidep_expo column in the phenotype file')
 } else {
-  print('antidep column in the phenotype file')
+  print('antidep_expo column in the phenotype file')
 }
 
 # remove missing values (if any?)
-ad_pheno <- ad_pheno %>% filter(!is.na(antidep)) 
+ad_pheno <- ad_pheno %>% filter(!is.na(antidep_expo)) 
 
 # logging phenotype characteristics 
 print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ' : Number of cases: ',
              nrow(ad_pheno %>% 
-                    filter(antidep==1)), 
+                    filter(antidep_expo==1)), 
              'Number of controls: ',
              nrow(ad_pheno%>% 
-                    filter(antidep==0))))
+                    filter(antidep_expo==0))))
 
 all_covs <- readRDS(covs_fp)
 
@@ -98,10 +98,10 @@ MetS_pheno_covs <- merge(MetS_pheno, all_covs, by = id_col)
 
 print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ' after merging with MetS and pheno: Number of cases: ',
              nrow(MetS_pheno_covs %>% 
-                    filter(antidep==1)), 
+                    filter(antidep_expo==1)), 
              ' \n Number of controls: ',
              nrow(MetS_pheno_covs %>% 
-                    filter(antidep==0))))
+                    filter(antidep_expo==0))))
 
 ###############################################################################
   
@@ -114,7 +114,7 @@ print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ' aft
 # Outcome - Antidepressant exposure phenotype 
 # Predictor - Antidepressant MetS (from MetS_calc.R)
 
-assoc_mod <- glm(as.factor(antidep) ~ scale(AD_MetS) + as.integer(age) + as.factor(assessment_centre) +
+assoc_mod <- glm(as.factor(antidep_expo) ~ scale(AD_MetS) + as.integer(age) + as.factor(assessment_centre) +
                  as.factor(spectrometer) + as.factor(sex) + as.factor(smoking_status) + as.factor(education) + 
                  as.factor(ethnicity) + as.numeric(bmi) + as.factor(mdd) + as.factor(alcohol_drinking), 
                  family=binomial (link=logit), data = MetS_pheno_covs)
@@ -140,11 +140,11 @@ saveRDS(assoc_coefs, outfile)
 
 predicted_probs <- predict(assoc_mod, type = 'response')
 
-# Take the true outcomes (MetS_pheno_covs$antidep)
+# Take the true outcomes (MetS_pheno_covs$antidep_expo)
 # and the predicted probabilities for the 1 ('case') class
 # returns false positive and true positive rates for different classification thresholds
 
-roc_curve <- roc(MetS_pheno_covs$antidep, predicted_probs)
+roc_curve <- roc(MetS_pheno_covs$antidep_expo, predicted_probs)
 auc_value <- auc(roc_curve)
 
 # save ROC curve object for plotting all cohorts together
@@ -163,7 +163,7 @@ dev.off()
 
 ###############################################################################
 
-pr_curve <- pr.curve(MetS_pheno_covs$antidep, predicted_probs, curve = T)
+pr_curve <- pr.curve(MetS_pheno_covs$antidep_expo, predicted_probs, curve = T)
 
 cairo_pdf(file = paste0(outdir, cohort, '_assoc_precision_recall.pdf'), width = 8, height = 6)
 plot(pr_curve, main= paste0(cohort, ' : Precision Recall Curve'), col = 'red')

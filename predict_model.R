@@ -114,7 +114,7 @@ print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, ' aft
 # Outcome - Antidepressant exposure phenotype 
 # Predictor - Antidepressant MetS (from MetS_calc.R)
 
-assoc_mod <- glm(as.factor(antidep) ~ scale(AD_MetS) + as.numeric(age) + as.factor(assessment_centre) +
+assoc_mod <- glm(as.factor(antidep) ~ scale(AD_MetS) + as.integer(age) + as.factor(assessment_centre) +
                  as.factor(spectrometer) + as.factor(sex) + as.factor(smoking_status) + as.factor(education) + 
                  as.factor(ethnicity) + as.numeric(bmi) + as.factor(mdd) + as.factor(alcohol_drinking), 
                  family=binomial (link=logit), data = MetS_pheno_covs)

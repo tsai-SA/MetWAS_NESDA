@@ -15,8 +15,8 @@ Please refer to the following information for further details and please let us 
 The metabolic scores were trained using standardised metabolic levels using z-score standardisation. Therefore we would like the metabolic scores to be calculated also using standardised metabolic levels.
 
 The R script preprocessing_metabolites.R will read :
-1) the dataframe (as .rds format) containing your cohort's metabolite levels, it should have rows as participant ID and columns as metabolite names.
-2) the Met_list.rds file which contains a list of probe metabolites provided by us
+1) The dataframe (as .rds format) containing your cohort's metabolite levels, it should have rows as participant ID and columns as metabolite names.
+2) The Met_list.rds file which contains a list of probe metabolites provided by us
 Then the R script will filter your cohort's metabolites to the probe metabolites from our training model and scale them
 
 Arguments:
@@ -38,9 +38,9 @@ Rscript preprocessing_metabolites.R \
 
 ## Calculate metabolic scores
 The R script MetS_calc.R will read: 
-1) the _mrs_preproc_metabolites.rds file from preprocessing_metabolites.R,
-2) the LASSO weights provided by us
-3) the antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
+1) The _mrs_preproc_metabolites.rds file from preprocessing_metabolites.R,
+2) The LASSO weights provided by us
+3) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
 Then, it will calculate metabolic score for each participant.
 
 Arguments:
@@ -62,9 +62,9 @@ Rscript MetS_calc.R \
 
 ## Predictive models
 The R script predict_model.R will read:
-1) the _AD_MetS.rds file from MetS_calc.R output
-2) the antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
-3) a .rds file with ID and the covariates: assessment_centre, spectrometer, age, sex, smoking_status,     educatio, bmi, ethnicity, mdd, alcohol_drinking as columns.
+1) The _AD_MetS.rds file from MetS_calc.R output
+2) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
+3) A .rds file with ID and the covariates: assessment_centre, spectrometer, age, sex, smoking_status,     educatio, bmi, ethnicity, mdd, alcohol_drinking as columns.
 Then the metabolic scores created in the previous step will be used to predict antidepressant exposure status in your cohort. 
 
 

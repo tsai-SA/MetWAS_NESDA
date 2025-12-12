@@ -1,10 +1,9 @@
 # MetWAS-NESDA
 External validation of metabolome-wide association study of antidepressant exposure
 
-Shared files required
-UKB_AD_met_weights.rds: Metabolites and their LASSO weights trained using UKB cohort
-
-Met_list.rds: List of metabolite with non-zero coefficient (LASSO) used in calculating the metabolic scores
+Shared files required:
+1) UKB_AD_met_weights.rds: Metabolites and their LASSO weights trained using UKB cohort
+2) Met_list.rds: List of metabolite with non-zero coefficient (LASSO) used in calculating the metabolic scores
 
 ## Overall summary:
 1) Run preprocessing_metabolites.R to standardise the metabolites
@@ -75,7 +74,7 @@ Phenotype : Antidepressant exposure phenotype (0/1)
 Predictor : Metabolic scores output from MetS_calc.R
 Covariates: Should have rows as participant ID and columns as covariates.
 
-General Output
+General Output: 
 
 We would like the coefficients of the model, alongside the standard errors, t values, P values. We will assess the model's performance using AUC, including ROC and PR curves.
 

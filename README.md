@@ -28,6 +28,7 @@ Arguments:
 --outdir : The directory where the outputs will be saved
 
 Example:
+```bash
 Rscript preprocessing_metabolites.R \
   --cohort "UKB" \
   --metabolites "/Users/Desktop/test_met_data.rds" \
@@ -35,6 +36,7 @@ Rscript preprocessing_metabolites.R \
   --id_column "ID" \
   --analysis "mrs" \
   --outdir "/Users/Desktop/"
+```
 
 ## Calculate metabolic scores
 The R script MetS_calc.R will read: 
@@ -52,6 +54,7 @@ Arguments:
 --outdir : The directory where the results and graphs will be saved 
 
 Example:
+```bash
 Rscript MetS_calc.R \
 --cohort "UKB" \
 --std_met "/Users/Desktop/UKB_mrs_preproc_metabolites.rds" \
@@ -59,6 +62,7 @@ Rscript MetS_calc.R \
 --ukb_weights "/Users/Desktop/lasso_coef.rds" \
 --pheno "/Users/Desktop/pheno.rds" \
 --outdir "/Users/Desktop/"
+```
 
 ## Predictive models
 The R script predict_model.R will read:
@@ -81,6 +85,7 @@ Arguments:
 --outdir : The directory where the results and graphs will be saved 
 
 Example:
+```bash
 Rscript predict_model.R \
 --cohort "UKB" \
 --id_column "ID" \
@@ -88,8 +93,9 @@ Rscript predict_model.R \
 --pheno "/Users/Desktop/pheno.rds" \
 --covs "/Users/Desktop/covs.rds" \
 --outdir "/Users/Desktop/"
+```
 
-
+```bash
 Rscript basic_model_all.R \
 --cohort "UKB" \
 --id_column "ID" \
@@ -97,12 +103,14 @@ Rscript basic_model_all.R \
 --pheno "/Users/angelatsaii/Desktop/pheno.rds" \
 --basic_covs "/Users/angelatsaii/Desktop/basic_covs.rds" \
 --outdir "/Users/angelatsaii/Desktop/"
+```
 
-
-Rscript complex_model_all.R \\
---cohort "UKB" \\
---id_column "ID" \\
---ms "/Users/angelatsaii/Desktop/UKB_AD_MetS.rds" \\
---pheno "/Users/angelatsaii/Desktop/pheno.rds" \\
---complex_covs "/Users/angelatsaii/Desktop/complex_covs.rds" \\
+```bash
+Rscript complex_model_all.R \
+--cohort "UKB" \
+--id_column "ID" \
+--ms "/Users/angelatsaii/Desktop/UKB_AD_MetS.rds" \
+--pheno "/Users/angelatsaii/Desktop/pheno.rds" \
+--complex_covs "/Users/angelatsaii/Desktop/complex_covs.rds" \
 --outdir "/Users/angelatsaii/Desktop/"
+```

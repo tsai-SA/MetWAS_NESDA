@@ -35,7 +35,7 @@ cohort <- opt$cohort
 id_col <- opt$id_column # Vector of identifier columns 
 pheno_fp=opt$pheno # AD exposure (phenotype of cohort)
 MetS_fp=opt$ms # AD MetS (predictor) 
-complex_covs_fp=opt$basic_covs # Just age and sex + cohort's technical covs
+complex_covs_fp=opt$complex_covs # Just age and sex + cohort's technical covs
 outdir <- opt$outdir # File path of output directory
 
 args <- commandArgs(trailingOnly = FALSE) # get script name

@@ -185,7 +185,7 @@ pr_curve <- pr.curve(MetS_pheno_covs$antidep_expo, predicted_probs, curve = T)
 outfile_pr <- file.path(outdir, paste0(cohort, "_", script_name, "_assoc_precision_recall.pdf"))
 print(paste0('Saving the PR curve for the cohort alone to ', outfile_pr))
 cairo_pdf(file = outfile_pr, width = 8, height = 6)
-plot(pr_curve, col = "red", main= paste0('Precision Recall Curve: ', cohort, "_", script_name)
+plot(pr_curve, col = "red", main= paste0('Precision Recall Curve: ', cohort, "_", script_name))
 dev.off()
 
 sink()

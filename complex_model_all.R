@@ -23,9 +23,9 @@ parse <- OptionParser()
 option_list <- list(
   make_option('--cohort', type='character', help="Cohort, ideally no spaces (for graphs and documentation)", action='store'),
   make_option('--id_column', type = 'character', default="ID", help = "Column names of identifier column", action = 'store'),
-  make_option('--ms', type = 'character', help = 'File path to metabolic score file (made using MetS_calc.R)'),
+  make_option('--ms', type = 'character', help = 'File path to metabolic score file made using MetS_calc.R'),
   make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file'),
-  make_option('--covs', type = 'character', help = 'File path to covariate file'),
+  make_option('--complex_covs', type = 'character', help = 'File path to covariate file for complex model'),
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
 )
 
@@ -35,7 +35,7 @@ cohort <- opt$cohort
 id_col <- opt$id_column # Vector of identifier columns 
 pheno_fp=opt$pheno # AD exposure (phenotype of cohort)
 MetS_fp=opt$ms # AD MetS (predictor) 
-covs_fp=opt$covs # Just age and sex + cohort's technical covs
+complex_covs_fp=opt$complex_covs # Just age and sex + cohort's technical covs + lifestyle covs
 outdir <- opt$outdir # File path of output directory
 
 args <- commandArgs(trailingOnly = FALSE) # get script name
@@ -91,12 +91,11 @@ print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, scrip
              nrow(ad_pheno%>% 
                     filter(antidep_expo==0))))
 
-all_covs <- readRDS(covs_fp)
+all_covs <- readRDS(complex_covs_fp)
 
 print(paste0("Covariates read in ", paste(colnames(all_covs %>% dplyr::select(-all_of(id_col))), collapse = ", ")))
 print(paste0("Covariates data type:\n", paste(capture.output(str(all_covs)), collapse = "\n")))
-
-
+ 
 #merge the phenotype and MetS file together 
 
 MetS_pheno <- merge(MetS, ad_pheno, by = id_col)
@@ -133,7 +132,7 @@ formula <- as.formula(
 
 assoc_mod <- glm(formula, 
                  family=binomial (link=logit), 
-                 data = MetS_pheno)
+                 data = MetS_pheno_covs)
 
 # Extract the effect estimates, standard errors and p-value 
 warnings()
@@ -186,7 +185,7 @@ pr_curve <- pr.curve(MetS_pheno_covs$antidep_expo, predicted_probs, curve = T)
 outfile_pr <- file.path(outdir, paste0(cohort, "_", script_name, "_assoc_precision_recall.pdf"))
 print(paste0('Saving the PR curve for the cohort alone to ', outfile_pr))
 cairo_pdf(file = outfile_pr, width = 8, height = 6)
-plot(pr_curve, col = "red", main= paste0('Precision Recall Curve: ', cohort, "_", script_name)
+plot(pr_curve, col = "red", main= paste0('Precision Recall Curve: ', cohort, "_", script_name))
 dev.off()
 
 sink()

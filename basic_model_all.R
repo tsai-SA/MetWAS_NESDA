@@ -25,7 +25,7 @@ option_list <- list(
   make_option('--id_column', type = 'character', default="ID", help = "Column names of identifier column", action = 'store'),
   make_option('--ms', type = 'character', help = 'File path to metabolic score file (made using MetS_calc.R)'),
   make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file'),
-  make_option('--covs', type = 'character', help = 'File path to covariate file'),
+  make_option('--basic_covs', type = 'character', help = 'File path to covariate file for basic model'),
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
 )
 
@@ -95,8 +95,7 @@ all_covs <- readRDS(covs_fp)
 
 print(paste0("Covariates read in ", paste(colnames(all_covs %>% dplyr::select(-all_of(id_col))), collapse = ", ")))
 print(paste0("Covariates data type:\n", paste(capture.output(str(all_covs)), collapse = "\n")))
-
-
+ 
 #merge the phenotype and MetS file together 
 
 MetS_pheno <- merge(MetS, ad_pheno, by = id_col)

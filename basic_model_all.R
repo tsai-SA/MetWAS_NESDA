@@ -23,7 +23,7 @@ parse <- OptionParser()
 option_list <- list(
   make_option('--cohort', type='character', help="Cohort, ideally no spaces (for graphs and documentation)", action='store'),
   make_option('--id_column', type = 'character', default="ID", help = "Column names of identifier column", action = 'store'),
-  make_option('--ms', type = 'character', help = 'File path to metabolic score file (made using MetS_calc.R)'),
+  make_option('--ms', type = 'character', help = 'File path to metabolic score file made using MetS_calc.R'),
   make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file'),
   make_option('--basic_covs', type = 'character', help = 'File path to covariate file for basic model'),
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
@@ -35,7 +35,7 @@ cohort <- opt$cohort
 id_col <- opt$id_column # Vector of identifier columns 
 pheno_fp=opt$pheno # AD exposure (phenotype of cohort)
 MetS_fp=opt$ms # AD MetS (predictor) 
-covs_fp=opt$covs # Just age and sex + cohort's technical covs
+basic_covs_fp=opt$basic_covs # Just age and sex + cohort's technical covs
 outdir <- opt$outdir # File path of output directory
 
 args <- commandArgs(trailingOnly = FALSE) # get script name
@@ -91,7 +91,7 @@ print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, scrip
              nrow(ad_pheno%>% 
                     filter(antidep_expo==0))))
 
-all_covs <- readRDS(covs_fp)
+all_covs <- readRDS(basic_covs_fp)
 
 print(paste0("Covariates read in ", paste(colnames(all_covs %>% dplyr::select(-all_of(id_col))), collapse = ", ")))
 print(paste0("Covariates data type:\n", paste(capture.output(str(all_covs)), collapse = "\n")))
@@ -132,7 +132,7 @@ formula <- as.formula(
 
 assoc_mod <- glm(formula, 
                  family=binomial (link=logit), 
-                 data = MetS_pheno)
+                 data = MetS_pheno_covs)
 
 # Extract the effect estimates, standard errors and p-value 
 warnings()

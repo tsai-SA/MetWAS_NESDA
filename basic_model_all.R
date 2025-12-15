@@ -22,7 +22,6 @@ parse <- OptionParser()
 # setting up options for the filepaths to the correct files
 option_list <- list(
   make_option('--cohort', type='character', help="Cohort, ideally no spaces (for graphs and documentation)", action='store'),
-  make_option('--model_descrip', type='character', help="Description of the model, ideally no spaces (for graphs and documentation)", action='store'),
   make_option('--id_column', type = 'character', default="ID", help = "Column names of identifier column", action = 'store'),
   make_option('--ms', type = 'character', help = 'File path to metabolic score file (made using MetS_calc.R)'),
   make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file'),
@@ -33,16 +32,20 @@ option_list <- list(
 args = commandArgs(trailingOnly=TRUE)
 opt <- parse_args(OptionParser(option_list=option_list), args=args)
 cohort <- opt$cohort
-descrip <- opt$model_descrip # basic glm in all participants
 id_col <- opt$id_column # Vector of identifier columns 
 pheno_fp=opt$pheno # AD exposure (phenotype of cohort)
 MetS_fp=opt$ms # AD MetS (predictor) 
 covs_fp=opt$covs # Just age and sex + cohort's technical covs
 outdir <- opt$outdir # File path of output directory
 
+args <- commandArgs(trailingOnly = FALSE) # get script name
+script_path <- sub("--file=", "", args[grep("--file=", args)])
+script_name <- tools::file_path_sans_ext(basename(script_path))
+outdir_fp <- file.path(outdir, script_name)
+
 # sinking all output to a log file 
 
-sink(paste0(outdir, cohort, model_descrip, "_MetS_AD_assoc.log"))
+sink(paste0(cohort, script_name, "_MetS_AD_assoc.log"))
 
 ###############################################################################
 
@@ -81,7 +84,7 @@ if('antidep_expo' %in% colnames(ad_pheno) == FALSE){
 ad_pheno <- ad_pheno %>% filter(!is.na(antidep_expo)) 
 
 # logging phenotype characteristics 
-print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, model_descrip, ' : Number of cases: ',
+print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, script_name, ' : Number of cases: ',
              nrow(ad_pheno %>% 
                     filter(antidep_expo==1)), 
              'Number of controls: ',
@@ -102,7 +105,7 @@ MetS_pheno_covs <- merge(MetS_pheno, all_covs, by = id_col)
 
 # logging phenotype characteristics after merging 
 
-print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, model_descrip, ' after merging with MetS and pheno: Number of cases: ',
+print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, script_name, ' after merging with MetS and pheno: Number of cases: ',
              nrow(MetS_pheno_covs %>% 
                     filter(antidep_expo==1)), 
              ' \n Number of controls: ',
@@ -141,7 +144,7 @@ assoc_coefs <- summary(assoc_mod)$coefficients %>% as.data.frame()
 assoc_coefs <- rownames_to_column(assoc_coefs, var = "Coefficient")
 
 # save the coefficients 
-outfile <- file.path(outdir, paste0(cohort, model_descrip, "_MetS_AD_coefficients.rds"))
+outfile <- file.path(outdir, paste0(cohort, "_", script_name, "_MetS_AD_coefficients.rds"))
 print(paste0('Saving the model coefficients to ', outfile))
 saveRDS(assoc_coefs, outfile)
 
@@ -161,13 +164,15 @@ roc_curve <- roc(MetS_pheno_covs$antidep_expo, predicted_probs)
 auc_value <- auc(roc_curve)
 
 # save ROC curve object for plotting all cohorts together
-print(paste0('Saving the ROC curve object for plotting all cohorts together to rds object: ', outdir, cohort, model_descrip, '_roc_curve.rds'))
-saveRDS(roc_curve, paste0(outdir, cohort, model_descrip, '_roc_curve.rds'))
+outfile_roc <- file.path(outdir, paste0(cohort, "_", script_name, "_roc_curve.rds"))
+print(paste0('Saving the ROC curve object for plotting all cohorts together to rds object: ', outfile_roc))
+saveRDS(roc_curve, outfile_roc)
 
 # ROC Graph 
-print(paste0('Saving the ROC curve for the cohort alone to ', outdir, cohort, model_descrip, '_assoc_ROC_curve.pdf'))
-cairo_pdf(file = paste0(outdir, cohort, model_descrip, '_assoc_ROC_curve.pdf'), width = 8, height = 6)
-plot.roc(roc_curve, col = "blue", lwd =2, main = paste0('ROC Curve: ', cohort, model_descrip))
+outfile_roc_graph <- file.path(outdir, paste0(cohort, "_", script_name, "_assoc_ROC_curve.pdf"))
+print(paste0('Saving the ROC curve for the cohort alone to ', outfile_roc_graph))
+cairo_pdf(file = outfile_roc_graph, width = 8, height = 6)
+plot.roc(roc_curve, col = "blue", lwd =2, main = paste0('ROC Curve: ', cohort, "_", script_name))
 dev.off()
 
 ###############################################################################
@@ -178,8 +183,10 @@ dev.off()
 
 pr_curve <- pr.curve(MetS_pheno_covs$antidep_expo, predicted_probs, curve = T)
 
-cairo_pdf(file = paste0(outdir, cohort, model_descrip, '_assoc_precision_recall.pdf'), width = 8, height = 6)
-plot(pr_curve, main= paste0(cohort, model_descrip, ' : Precision Recall Curve'), col = 'red')
+outfile_pr <- file.path(outdir, paste0(cohort, "_", script_name, "_assoc_precision_recall.pdf"))
+print(paste0('Saving the PR curve for the cohort alone to ', outfile_pr))
+cairo_pdf(file = outfile_pr, width = 8, height = 6)
+plot(pr_curve, col = "red", main= paste0('Precision Recall Curve: ', cohort, "_", script_name)
 dev.off()
 
 sink()

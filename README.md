@@ -114,3 +114,13 @@ Rscript complex_model_all.R \
 --complex_covs "/Users/angelatsaii/Desktop/complex_covs.rds" \
 --outdir "/Users/angelatsaii/Desktop/"
 ```
+
+```bash
+Rscript basic_model_mdd.R \
+--cohort "UKB" \
+--id_column "ID" \
+--ms "/Users/angelatsaii/Desktop/UKB_AD_MetS.rds" \
+--pheno "/Users/angelatsaii/Desktop/pheno.rds" \
+--basic_covs "/Users/angelatsaii/Desktop/basic_covs.rds" \
+--outdir "/Users/angelatsaii/Desktop/"
+```

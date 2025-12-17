@@ -43,12 +43,12 @@ out_dir <- opt$outdir
 sink(paste0(out_dir, cohort, "_", analysis, "_prepro_metabolites.log"))  #log file
 
 
-if (analysis == 'sig'){
+if (analysis == 'plot'){
   print('Preprocessing metabolites for the plotting the distributions of significant metabolites from the UKB metWAS in an external cohort')
-} else if (analysis == 'mrs') {
+} else if (analysis == 'scale') {
   print('Preprocessing metabolites for the calculation of metabolic scores with weights from LASSO in UKB')
 } else {
-  stop('Please provide either sig or mrs to the analysis argument')
+  stop('Please provide either plot or scale to the analysis argument')
 }
 print(paste0('Metabolite file from : ', met_filepath))
 print(paste0('List of metabolite names from : ', names_filepath))
@@ -120,25 +120,12 @@ ggsave(filename=paste0(out_dir, cohort, "_", analysis, "_met_preproc_std.png"),m
 
 ###############################################################################
 
-# Write out the filtered and standardised DNAm data 
+# Write out the filtered and standardised metabolite data 
 
 ###############################################################################
 
-outfile <- paste0(out_dir, cohort, "_", analysis, "_preproc_metabolites.rds")
+outfile <- paste0(out_dir, cohort, "_", analysis, "_std_metabolites.rds")
 saveRDS(met_std, outfile)
 sink()
 
 
-
-############example
-###metabolites should rds format with metabolites as columns and participant ID as rows
-###list should be a vector with a list of metabolites from LASSO(non-zero coefficients)
-###analysis is either sig(plot unstandardised vs standardised distribution of metabolites) or mrs(just standardisation)
-
-Rscript preprocessing_metabolites.R \
-  --cohort "UKB" \
-  --metabolites "/Users/Desktop/test_met_data.rds" \
-  --list "/Users/Desktop/probes_list.rds" \
-  --id_column "ID" \
-  --analysis "mrs" \
-  --outdir "/Users/angelatsaii/Desktop/"

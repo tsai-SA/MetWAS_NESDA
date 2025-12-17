@@ -64,15 +64,15 @@ Rscript MetS_calc.R \
 --outdir "/Users/Desktop/"
 ```
 
-## Predictive models
-The R script predict_model.R will read:
+## Predictive model 1 : basic model in all participants
+The R script basic_model_all.R will read:
 1) The _AD_MetS.rds file from MetS_calc.R output
 2) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
-3) A .rds file with ID and the covariates: assessment_centre, spectrometer, age, sex, smoking_status,     educatio, bmi, ethnicity, mdd, alcohol_drinking as columns.
+3) A .rds file with ID and the **basic covariates** including sex, age, techinical covariates such as assessment_centre and/or spectrometer (if applicable) as columns.
+
 Then the metabolic scores created in the previous step will be used to predict antidepressant exposure status in your cohort. 
 
-
-Key elements of the model: Phenotype (antidepressant exposure phenotype), predictor (metabolic scores output from MetS_calc.R), covariates (should have rows as participant ID and columns as covariates)
+Key elements of the model: Phenotype (antidepressant exposure phenotype), predictor (metabolic scores output from MetS_calc.R), basic covariates (should have rows as participant ID and columns as covariates)
 
 General Output: We would like the coefficients of the model, alongside the standard errors, t values, P values. We will assess the model's performance using AUC, including ROC and PR curves.
 
@@ -81,56 +81,87 @@ Arguments:
 --id_column : The column name of the identifier column (default == ID) \
 --ms : file path to the _AD_MetS.rds file from MetS_calc.R output
 --pheno : The file path to the antidepressant exposure phenotype file for your cohort (rds format). The file should have two columns: ID and antidep_expo with antidep_expo coded as 0 (no exposure) and 1 (exposure) \
---covs : The file path to the covariate file for your cohort (rds format). It should include ID and each covariate as column \
+--basic_covs : The file path to the basic covariate file for your cohort (rds format). It should include ID and each covariate as column \
 --outdir : The directory where the results and graphs will be saved 
 
-Example:
-```bash
-Rscript predict_model.R \
---cohort "UKB" \
---id_column "ID" \
---ms "/Users/Desktop/UKB_AD_MetS.rds" \
---pheno "/Users/Desktop/pheno.rds" \
---covs "/Users/Desktop/covs.rds" \
---outdir "/Users/Desktop/"
-```
 
 ```bash
 Rscript basic_model_all.R \
 --cohort "UKB" \
 --id_column "ID" \
---ms "/Users/angelatsaii/Desktop/UKB_AD_MetS.rds" \
---pheno "/Users/angelatsaii/Desktop/pheno.rds" \
---basic_covs "/Users/angelatsaii/Desktop/basic_covs.rds" \
---outdir "/Users/angelatsaii/Desktop/"
+--ms "/Users/Desktop/UKB_AD_MetS.rds" \
+--pheno "/Users/Desktop/pheno.rds" \
+--basic_covs "/Users/Desktop/basic_covs.rds" \
+--outdir "/Users/Desktop/"
 ```
+
+## Predictive model 2 : basic model in MDD cases only
+The basic_model_mdd.R script is similar to model 1, but with additional mdd column (MDD diagnosis) and it will filter out participants with no MDD diagnosis
+1) The _AD_MetS.rds file from MetS_calc.R output
+2) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
+3) A .rds file with ID and the **basic covariates** including sex, age, mdd, techinical covariates such as assessment_centre and/or spectrometer (if applicable) as columns. The mdd column should be coded into 0/1 (1 = mdd, 0 = controls), the basic_model_mdd.R script will filter out the controls.
+   
+```bash
+Rscript basic_model_mdd.R \
+--cohort "UKB" \
+--id_column "ID" \
+--ms "/Users/Desktop/UKB_AD_MetS.rds" \
+--pheno "/Users/Desktop/pheno.rds" \
+--basic_covs "/Users/Desktop/basic_covs.rds" \
+--outdir "/Users/Desktop/"
+```
+
+## Predictive model 3 : complex model in all participants
+This is also similar to model 1 but with additional lifestyle-related covariates such as smoking status, socioeconomic status, educational level, MDD diagnosis, ethnicity, depressive symptom scores, alcohol drinking (only when applicable)
+
+The R script complex_model_all.R will read:
+1) The _AD_MetS.rds file from MetS_calc.R output
+2) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
+3) A .rds file with ID and the **complex covariates** including sex, age, techinical covariates such as assessment_centre and/or spectrometer, and lifestyle covariates (if applicable) as columns.
 
 ```bash
 Rscript complex_model_all.R \
 --cohort "UKB" \
 --id_column "ID" \
---ms "/Users/angelatsaii/Desktop/UKB_AD_MetS.rds" \
---pheno "/Users/angelatsaii/Desktop/pheno.rds" \
---complex_covs "/Users/angelatsaii/Desktop/complex_covs.rds" \
---outdir "/Users/angelatsaii/Desktop/"
+--ms "/Users/Desktop/UKB_AD_MetS.rds" \
+--pheno "/Users/Desktop/pheno.rds" \
+--complex_covs "/Users/Desktop/complex_covs.rds" \
+--outdir "/Users/Desktop/"
 ```
 
-```bash
-Rscript basic_model_mdd.R \
---cohort "UKB" \
---id_column "ID" \
---ms "/Users/angelatsaii/Desktop/UKB_AD_MetS.rds" \
---pheno "/Users/angelatsaii/Desktop/pheno.rds" \
---basic_covs "/Users/angelatsaii/Desktop/basic_covs.rds" \
---outdir "/Users/angelatsaii/Desktop/"
-```
+## Predictive model 4 : complex model in MDD cases only
+This is also similar to model 3 (with lifestyle-related covariates) but in MDD cases only
+
+The R script complex_model_mdd.R will read:
+1) The _AD_MetS.rds file from MetS_calc.R output
+2) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
+3) A .rds file with ID and the **complex covariates** including sex, age, techinical covariates such as assessment_centre and/or spectrometer, and lifestyle covariates (if applicable) as columns. The mdd column should be coded into 0/1 (1 = mdd, 0 = controls), the complex_model_mdd.R script will filter out the controls.
 
 ```bash
 Rscript complex_model_mdd.R \
 --cohort "UKB" \
 --id_column "ID" \
---ms "/Users/angelatsaii/Desktop/UKB_AD_MetS.rds" \
---pheno "/Users/angelatsaii/Desktop/pheno.rds" \
---complex_covs "/Users/angelatsaii/Desktop/complex_covs.rds" \
---outdir "/Users/angelatsaii/Desktop/"
+--ms "/Users/Desktop/UKB_AD_MetS.rds" \
+--pheno "/Users/Desktop/pheno.rds" \
+--complex_covs "/Users/Desktop/complex_covs.rds" \
+--outdir "/Users/Desktop/"
+```
+
+## Demographic information about your cohort
+The file cohort_demograph_info.R will generate a table of demographic information of your cohort (useful for the manuscript and interpretating our results). It formats information on age, sex, bmi, smoking, MDD diagnosis, and AD MetS (generated from MetS_calc.R).
+
+--cohort: Cohort name, e.g 'GS' or 'NESDA'
+--id_column: The column name of the identifier column (default == ID)
+--ms: The filepath to the _AD_MetS.rds file from MetS_calc.R output (colnames: ID, AD_MetS)
+--pheno: The filepath to the AD phenotype file (colnames: ID, antidep_expo(0 = no exposure/1 = antidepressant exposure))
+--demo: Filepath to the file containing demographic variables: age(numeric), sex(factor: Male/Female), bmi(numeric), mdd(factor: 0 = controls/1 = cases), AD_MetS)
+
+```bash
+Rscript cohort_demograph_info.R \
+--cohort "UKB" \
+--id_column "ID" \
+--ms "/Users/Desktop/UKB_AD_MetS.rds" \
+--pheno "/Users/Desktop/pheno.rds" \
+--demo "/Users/Desktop/covs.rds" \
+--outdir "/Users/Desktop/"
 ```

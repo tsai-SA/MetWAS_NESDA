@@ -16,13 +16,13 @@ The metabolic scores were trained using standardised metabolic levels using z-sc
 
 The R script preprocessing_metabolites.R will read :
 1) The dataframe (as .rds format) containing your cohort's metabolite levels, it should have rows as participant ID and columns as metabolite names.
-2) The Met_list.rds file which contains a list of probe metabolites provided by us
+2) The probe_list.rds file which contains a list of probe metabolites provided by us
 Then the R script will filter your cohort's metabolites to the probe metabolites from our training model and scale them
 
 Arguments:
 --cohort : Cohort name, e.g 'UKB' or 'NESDA' \
 --metabolites : The file path to the metabolite file (rds format) \
---list : The file path for the list of metabolites from LASSO(non-zero coefficients) provided by us \
+--probe : The file path for the list of probe metabolites from LASSO(non-zero coefficients) provided by us \
 --id_column : The column name of the identifier column (default == ID) \
 --analysis: Either 'plot' (plot unstandardised vs standardised distribution of metabolites) or 'scale' (just standardisation) \
 --outdir : The directory where the outputs will be saved
@@ -32,7 +32,7 @@ Example:
 Rscript preprocessing_metabolites.R \
   --cohort "UKB" \
   --metabolites "/Users/Desktop/test_met_data.rds" \
-  --list "/Users/Desktop/probes_list.rds" \
+  --probe "/Users/Desktop/probes_list.rds" \
   --id_column "ID" \
   --analysis "scale" \
   --outdir "/Users/Desktop/"

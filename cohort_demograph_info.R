@@ -1,7 +1,7 @@
 ###############################################################################
 
 # Demographic information about sample from the cohort 
-# age, sex, smoking_status, education, bmi, ethnicity, mdd, alcohol_drinking
+# age, sex, bmi, mdd
 
 ###############################################################################
 
@@ -87,10 +87,10 @@ table(is.na(ad_pheno$antidep_expo))
 ad_pheno <- ad_pheno %>% filter(!is.na(antidep_expo))
 
 # Demographics file 
-# If applicable: age, sex, smoking_status, educatio, bmi, ethnicity, mdd, alcohol_drinking
+# If applicable: age, sex, bmi, mdd
 # load in vector of required demographic variables 
 
-req_demo_vars <- c('age', 'sex', 'smoking_status', 'education', 'bmi', 'ethnicity', 'mdd', 'alcohol_drinking')
+req_demo_vars <- c('age', 'sex', 'bmi', 'mdd')
 if(all(req_demo_vars %in% colnames(demographics))){
   print('All demographic variables loaded in and named correctly')
 } else {

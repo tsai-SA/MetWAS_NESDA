@@ -17,7 +17,6 @@ option_list <- list(
   make_option('--metabolites', type='character', help="The filepath for metabolites file", action='store'), 
   make_option('--probe', type = 'character', help= "The filepath for the list of probe metabolites", action = 'store'),
   make_option('--id_column', type = 'character', default="ID", help = "Column name for identifier column", action = 'store'),
-  make_option('--analysis', type = 'character', help = 'Name of analysis that is being performed for', action = 'store'),
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
 )
 
@@ -31,19 +30,10 @@ cohort <- opt$cohort
 met_filepath=opt$metabolites # metabolite file
 probe_filepath=opt$probe # List of metabolite names
 id_col <- opt$id_column # Vector of identifier column
-analysis <- opt$analysis
 out_dir <- opt$outdir
 
-sink(paste0(out_dir, cohort, "_", analysis, "_prepro_metabolites.log"))  #log file
+sink(paste0(out_dir, cohort, "_", "_prepro_metabolites.log"))  #log file
 
-
-if (analysis == 'plot'){
-  print('Preprocessing metabolites for the plotting the distributions of significant metabolites from the UKB metWAS in an external cohort')
-} else if (analysis == 'scale') {
-  print('Preprocessing metabolites for the calculation of metabolic scores with weights from LASSO in UKB')
-} else {
-  stop('Please provide either plot or scale to the analysis argument')
-}
 print(paste0('Metabolite file from : ', met_filepath))
 print(paste0('List of probe metabolites from : ', probe_filepath))
 print(paste0('ID column : ', id_col))
@@ -109,7 +99,7 @@ met_dists <- ggplot(met_both, aes(x = Mval, fill = Metabolites)) +
   facet_grid(Values~Metabolites) +
   ggtitle(paste0(cohort, ': Random sample of metabolites - standardisation'))
 
-ggsave(filename=paste0(out_dir, cohort, "_", analysis, "_met_preproc_std.png"),met_dists, 
+ggsave(filename=paste0(out_dir, cohort, "_", "_met_preproc_std.png"),met_dists, 
        width = 8, height = 6, device='png', dpi=300)
 
 ###############################################################################
@@ -118,7 +108,7 @@ ggsave(filename=paste0(out_dir, cohort, "_", analysis, "_met_preproc_std.png"),m
 
 ###############################################################################
 
-outfile <- paste0(out_dir, cohort, "_", analysis, "_std_metabolites.rds")
+outfile <- paste0(out_dir, cohort, "_", "_std_metabolites.rds")
 saveRDS(met_std, outfile)
 sink()
 

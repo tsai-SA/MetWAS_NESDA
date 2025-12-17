@@ -24,7 +24,6 @@ Arguments:
 --metabolites : The file path to the metabolite file (rds format) \
 --probe : The file path for the list of probe metabolites from LASSO(non-zero coefficients) provided by us \
 --id_column : The column name of the identifier column (default == ID) \
---analysis: Either 'plot' (plot unstandardised vs standardised distribution of metabolites) or 'scale' (just standardisation) \
 --outdir : The directory where the outputs will be saved
 
 Example:
@@ -34,7 +33,6 @@ Rscript preprocessing_metabolites.R \
   --metabolites "/Users/Desktop/test_met_data.rds" \
   --probe "/Users/Desktop/probes_list.rds" \
   --id_column "ID" \
-  --analysis "scale" \
   --outdir "/Users/Desktop/"
 ```
 

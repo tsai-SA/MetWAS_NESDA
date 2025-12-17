@@ -8,7 +8,7 @@ Shared files required:
 ## Overall summary:
 1) Run preprocessing_metabolites.R to standardise the metabolites
 2) Run MetS_calc.R to apply the weights from our training model to your cohort and produce a metabolic score for each participant in your cohort
-3) Run predict_model.R to use the metabolic scores created in the previous step to predict antidepressant exposure status in your cohort
+3) Run four predictive models to use the metabolic scores created in the previous step to predict antidepressant exposure status in your cohort
 Please refer to the following information for further details and please let us know if you have any questions, thank you so much for your help!
 
 ## Metabolite preprocessing: Z-score standardisation

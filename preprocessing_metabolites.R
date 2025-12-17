@@ -45,7 +45,7 @@ if (analysis == 'plot'){
   stop('Please provide either plot or scale to the analysis argument')
 }
 print(paste0('Metabolite file from : ', met_filepath))
-print(paste0('List of metabolite names from : ', names_filepath))
+print(paste0('List of metabolite names from : ', list_filepath))
 print(paste0('ID column : ', id_col))
 print(paste0('Output to be saved in : ', out_dir))
 

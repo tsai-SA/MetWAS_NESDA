@@ -22,8 +22,8 @@ option_list <- list(
   make_option('--cohort', type='character', help="Cohort, ideally no spaces (for graphs and documentation)", action='store'),
   make_option('--id_column', type = 'character', default="ID", help = "Column names of identifier column in phenotype and covariate files", action = 'store'),
   make_option('--ms', type = 'character', help = 'File path to metabolic score file (made using MetS_calc.R)'),
-  make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file, column names (ID and antidep_expo),
-  make_option('--demo', type = 'character', help = 'File path to demographics file, column names,
+  make_option('--pheno', type = 'character', help = 'File path to antidepressant exposure phenotype file, column names (ID and antidep_expo)'),
+  make_option('--demo', type = 'character', help = 'File path to demographics file, column names'),
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
 )
 
@@ -50,7 +50,7 @@ sink(paste0(outdir, cohort, "_cohort_demographics.log"))
 # read in file with additional demographic information for manuscript 
 
 demographics <- readRDS(demo_fp)
-AD_MetS <- readRDS(MetS_fp)
+MetS <- readRDS(MetS_fp)
 
 if (endsWith(pheno_fp, '.rds')){
   ad_pheno <- readRDS(pheno_fp)
@@ -65,10 +65,10 @@ if (endsWith(pheno_fp, '.rds')){
 
 ###############################################################################
 
-if('MetS' %in% colnames(AD_MetS) == FALSE){
-  stop('No MetS column in the AD_MetS file')
+if('AD_MetS' %in% colnames(MetS) == FALSE){
+  stop('No AD_MetS column in the MetS file')
 } else {
-  print('MetS column in the AD_MetS file')
+  print('AD_MetS column in the MetS file')
 }
 
 
@@ -101,7 +101,7 @@ if(all(req_demo_vars %in% colnames(demographics))){
 
 # merge with the AD_MetS file 
 
-demographics <- merge(demographics, AD_MetS, by= id_col, all = TRUE)
+demographics <- merge(demographics, MetS, by= id_col, all = TRUE)
 
 ###############################################################################
 
@@ -116,52 +116,77 @@ demographics <- merge(demographics, AD_MetS, by= id_col, all = TRUE)
 # phenotype is the phenotype column name in the phenotype file 
 # file is the dataframe with the phenotype and covariate information 
 
-
 phenotype_summary <- function(phenotype, file) {
-  file <- file[!is.na(file[,phenotype]),]
-  print(colnames(file))
-  summary <- file %>% 
-    group_by(across(all_of(phenotype)))  %>% 
-    summarise(age = paste0(signif(mean(age, na.rm = T),3), 
-                           ' (', signif(sd(age, na.rm = T),3), ')'), 
-              bmi = paste0(signif(mean(bmi, na.rm = T),3), ' (', 
-                           signif(sd(bmi, na.rm = T),3),')'), 
-              MetS = paste0(signif(mean(MetS, na.rm = T),3),' (', 
-                                signif(sd(MetS, na.rm = T),3), ')'), 
-              
-              n = n()) %>%
-           
-           Female = c(file %>% 
-                        group_by(across(all_of(c(phenotype, 'sex')))) %>% 
-                        summarise(count = n()) %>% 
-                        mutate(percentage = (count/sum(count))*100) %>%
-                        mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                        filter(!!sym(phenotype)==0 & sex == 'Female') %>% 
-                        pull(val), 
-                      file %>% group_by(across(all_of(c(phenotype, 'sex')))) %>% 
-                        summarise(count = n()) %>% 
-                        mutate(percentage = (count/sum(count))*100) %>%
-                        mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                        filter(!!sym(phenotype)==1 & sex == 'Female') %>% 
-                        pull(val)), 
-           Male = c(file %>% 
-                      group_by(across(all_of(c(phenotype, 'sex')))) %>% 
-                      summarise(count = n()) %>% 
-                      mutate(percentage = (count/sum(count))*100) %>%
-                      mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                      filter(!!sym(phenotype)==0 & sex == 'Male') %>% 
-                      pull(val), 
-                    file %>% group_by(across(all_of(c(phenotype, 'sex')))) %>% 
-                      summarise(count = n()) %>% 
-                      mutate(percentage = (count/sum(count))*100) %>%
-                      mutate(val = paste0(count, ' (', signif(percentage,2), '%)')) %>%
-                      filter(!!sym(phenotype)==1 & sex == 'Male') %>% 
-                      pull(val))) %>% 
-    as.data.frame()
-  
-  summary <- summary %>% select(phenotype, n, age ,bmi,  Female, Male, MetS)
-  colnames(summary) <- c(phenotype, 'N', 'Age (SD)','BMI (SD)', 'Sex Female (%)', 'Sex Male (%)', 'AD MetS (%)')
-  return(summary)
+
+  # Remove NA phenotype
+  file <- file[!is.na(file[[phenotype]]), ]
+
+  # -------------------------
+  # Main summary
+  # -------------------------
+  summary_tbl <- file %>% 
+    group_by(across(all_of(phenotype))) %>% 
+    summarise(
+      age = paste0(
+        signif(mean(age, na.rm = TRUE), 3),
+        " (", signif(sd(age, na.rm = TRUE), 3), ")"
+      ),
+      bmi = paste0(
+        signif(mean(bmi, na.rm = TRUE), 3),
+        " (", signif(sd(bmi, na.rm = TRUE), 3), ")"
+      ),
+      AD_MetS = paste0(
+        signif(mean(AD_MetS, na.rm = TRUE), 3),
+        " (", signif(sd(AD_MetS, na.rm = TRUE), 3), ")"
+      ),
+      N = n(),
+      .groups = "drop"
+    )
+
+  # -------------------------
+  # Sex counts + percentages
+  # -------------------------
+  sex_tbl <- file %>%
+    group_by(across(all_of(c(phenotype, "sex")))) %>%
+    summarise(count = n(), .groups = "drop") %>%
+    group_by(across(all_of(phenotype))) %>%
+    mutate(
+      percentage = count / sum(count) * 100,
+      val = paste0(count, " (", signif(percentage, 2), "%)")
+    ) %>%
+    select(all_of(phenotype), sex, val) %>%
+    pivot_wider(
+      names_from = sex,
+      values_from = val,
+      names_prefix = "Sex_"
+    )
+
+  # -------------------------
+  # Combine
+  # -------------------------
+  summary <- summary_tbl %>%
+    left_join(sex_tbl, by = phenotype) %>%
+    select(
+      all_of(phenotype),
+      N,
+      age,
+      bmi,
+      Sex_Female,
+      Sex_Male,
+      AD_MetS
+    )
+
+  colnames(summary) <- c(
+    phenotype,
+    "N",
+    "Age (SD)",
+    "BMI (SD)",
+    "Sex Female (%)",
+    "Sex Male (%)",
+    "AD MetS (%)"
+  )
+
+  return(as.data.frame(summary))
 }
 
 ###############################################################################
@@ -235,4 +260,5 @@ write.table(demo_summary, paste0(outdir, cohort, '_demo_summary.tsv'), sep = '\t
 print(paste0('Saved the demographic summary to ', cohort, '_demo_summary.txt'))
 
 sink()
+
 

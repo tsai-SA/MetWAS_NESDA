@@ -15,7 +15,7 @@ parse <- OptionParser()
 option_list <- list(
   make_option('--cohort', type='character', help="Cohort", action='store'),
   make_option('--metabolites', type='character', help="The filepath for metabolites file", action='store'), 
-  make_option('--list', type = 'character', help= "The filepath for the list of metabolites", action = 'store'),
+  make_option('--probe', type = 'character', help= "The filepath for the list of probe metabolites", action = 'store'),
   make_option('--id_column', type = 'character', default="ID", help = "Column name for identifier column", action = 'store'),
   make_option('--analysis', type = 'character', help = 'Name of analysis that is being performed for', action = 'store'),
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
@@ -29,7 +29,7 @@ opt <- parse_args(OptionParser(option_list=option_list), args=args)
 print('Setting up the options')
 cohort <- opt$cohort
 met_filepath=opt$metabolites # metabolite file
-list_filepath=opt$list # List of metabolite names
+probe_filepath=opt$probe # List of metabolite names
 id_col <- opt$id_column # Vector of identifier column
 analysis <- opt$analysis
 out_dir <- opt$outdir
@@ -45,7 +45,7 @@ if (analysis == 'plot'){
   stop('Please provide either plot or scale to the analysis argument')
 }
 print(paste0('Metabolite file from : ', met_filepath))
-print(paste0('List of metabolite names from : ', list_filepath))
+print(paste0('List of probe metabolites from : ', probe_filepath))
 print(paste0('ID column : ', id_col))
 print(paste0('Output to be saved in : ', out_dir))
 
@@ -61,7 +61,7 @@ if (endsWith(met_filepath, ".rds")){
   stop("Unsupported file format. Please provide a file with .rds format")
 }
 
-met_list <- readRDS(list_filepath)
+met_list <- readRDS(probe_filepath)
 print('Read in files')
 
 ###############################################################################
@@ -70,7 +70,7 @@ print('Read in files')
 
 ###############################################################################
 print('Filter to just the LASSO metabolites')
-ms_met <- metabolites %>% select(c(all_of(id_col), intersect(names(metabolites), list)))
+ms_met <- metabolites %>% select(c(all_of(id_col), intersect(names(metabolites), met_list)))
 
 print(paste0('Filtered to ', ms_met %>% select(-id_col) %>% ncol())) 
 rm(metabolites) # remove large metabolite object 

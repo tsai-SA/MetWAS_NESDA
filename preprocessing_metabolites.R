@@ -61,7 +61,7 @@ if (endsWith(met_filepath, ".rds")){
   stop("Unsupported file format. Please provide a file with .rds format")
 }
 
-met_list <- readr::read_lines(list_filepath)
+met_list <- readRDS(list_filepath)
 print('Read in files')
 
 ###############################################################################

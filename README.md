@@ -9,10 +9,10 @@ Shared files required:
 1) Perform z-score standardisation using preprocessing_metabolites.R to scale the metabolites
 2) Run MetS_calc.R to apply the weights from our training model to your cohort and produce a metabolic score for each participant in your cohort
 3) Run four predictive models to use the metabolic scores created in the previous step to predict antidepressant exposure status in your cohort
-  - antidep_expo ~ sacle(AD_MetS) + age + sex + techinical covariates in ALL participants
-  - antidep_expo ~ sacle(AD_MetS) + age + sex + techinical covariates in MDD cases only (please add mdd as a column)
-  - antidep_expo ~ sacle(AD_MetS) + age + sex + techinical covariates + lifestyle covariates in ALL participants
-  - antidep_expo ~ sacle(AD_MetS) + age + sex + techinical covariates + lifestyle covariates in MDD cases only \
+  - antidep_expo ~ scale(AD_MetS) + age + sex + techinical covariates in ALL participants
+  - antidep_expo ~ scale(AD_MetS) + age + sex + techinical covariates in MDD cases only (please add mdd as a column)
+  - antidep_expo ~ scale(AD_MetS) + age + sex + techinical covariates + lifestyle covariates in ALL participants
+  - antidep_expo ~ scale(AD_MetS) + age + sex + techinical covariates + lifestyle covariates in MDD cases only \
 *Technical covariates can be variables such as assessment centre, spectrometer (if applicable) \
 *Lifestyle covariates can be variables such as BMI, smoking status, socioeconomic status, educational level, MDD diagnosis, ethnicity, depressive symptom scores, alcohol drinking (only when applicable) 
 4) Run cohort_demograph_info.R to generate a demographic table about your cohort 

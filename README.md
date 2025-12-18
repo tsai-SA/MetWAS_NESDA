@@ -161,6 +161,8 @@ The file cohort_demograph_info.R will generate a table of demographic informatio
 --ms: The filepath to the _AD_MetS.rds file from MetS_calc.R output (colnames: ID, AD_MetS) \
 --pheno: The filepath to the AD phenotype file (colnames: ID, antidep_expo(0 = no exposure/1 = antidepressant exposure)) \
 --demo: Filepath to the file containing demographic variables: age(numeric), sex(factor: Male/Female), bmi(numeric), mdd(factor: 0 = controls/1 = cases), AD_MetS)
+--outdir : The directory where the results will be saved 
+
 
 ```bash
 Rscript cohort_demograph_info.R \

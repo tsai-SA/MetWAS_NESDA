@@ -146,12 +146,12 @@ Rscript complex_model_mdd.R \
 ```
 
 ## Demographic information about your cohort
-The file cohort_demograph_info.R will generate a table of demographic information of your cohort (useful for the manuscript and interpretating our results). It formats information on age, sex, bmi, smoking, MDD diagnosis, and AD MetS (generated from MetS_calc.R).
+The file cohort_demograph_info.R will generate a table of demographic information of your cohort (useful for the manuscript and interpretating our results). It formats information on age, sex, bmi, MDD diagnosis, and AD MetS (generated from MetS_calc.R).
 
---cohort: Cohort name, e.g 'GS' or 'NESDA'
---id_column: The column name of the identifier column (default == ID)
---ms: The filepath to the _AD_MetS.rds file from MetS_calc.R output (colnames: ID, AD_MetS)
---pheno: The filepath to the AD phenotype file (colnames: ID, antidep_expo(0 = no exposure/1 = antidepressant exposure))
+--cohort: Cohort name, e.g 'GS' or 'NESDA' \
+--id_column: The column name of the identifier column (default == ID) \
+--ms: The filepath to the _AD_MetS.rds file from MetS_calc.R output (colnames: ID, AD_MetS) \
+--pheno: The filepath to the AD phenotype file (colnames: ID, antidep_expo(0 = no exposure/1 = antidepressant exposure)) \
 --demo: Filepath to the file containing demographic variables: age(numeric), sex(factor: Male/Female), bmi(numeric), mdd(factor: 0 = controls/1 = cases), AD_MetS)
 
 ```bash

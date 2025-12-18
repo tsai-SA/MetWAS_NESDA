@@ -14,7 +14,7 @@ Shared files required:
   - antidep_expo ~ sacle(AD_MetS) + age + sex + techinical covariates + lifestyle covariates in ALL participants
   - antidep_expo ~ sacle(AD_MetS) + age + sex + techinical covariates + lifestyle covariates in MDD cases only
 *Technical covariates can be variables such as assessment centre, spectrometer (if applicable)
-*Lifestyle covariates can be variables such as smoking status, socioeconomic status, educational level, MDD diagnosis, ethnicity, depressive symptom scores, alcohol drinking (only when applicable)
+*Lifestyle covariates can be variables such as BMI, smoking status, socioeconomic status, educational level, MDD diagnosis, ethnicity, depressive symptom scores, alcohol drinking (only when applicable)
 4) Run cohort_demograph_info.R to generate a demographic table about your cohort
 Please refer to the following information for further details and please let us know if you have any questions, thank you so much for your help!
 
@@ -117,7 +117,7 @@ Rscript basic_model_mdd.R \
 ```
 
 ## Predictive model 3 : complex model in all participants
-This is also similar to model 1 but with additional lifestyle-related covariates such as smoking status, socioeconomic status, educational level, MDD diagnosis, ethnicity, depressive symptom scores, alcohol drinking (only when applicable)
+This is also similar to model 1 but with additional lifestyle-related covariates such as BMI, smoking status, socioeconomic status, educational level, MDD diagnosis, ethnicity, depressive symptom scores, alcohol drinking (only when applicable)
 
 The R script complex_model_all.R will read:
 1) The _AD_MetS.rds file from MetS_calc.R output

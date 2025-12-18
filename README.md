@@ -15,7 +15,7 @@ Shared files required:
   - antidep_expo ~ sacle(AD_MetS) + age + sex + techinical covariates + lifestyle covariates in MDD cases only \
 *Technical covariates can be variables such as assessment centre, spectrometer (if applicable) \
 *Lifestyle covariates can be variables such as BMI, smoking status, socioeconomic status, educational level, MDD diagnosis, ethnicity, depressive symptom scores, alcohol drinking (only when applicable) 
-4) Run cohort_demograph_info.R to generate a demographic table about your cohort \
+4) Run cohort_demograph_info.R to generate a demographic table about your cohort 
 
 Please refer to the following information for further details and please let us know if you have any questions, thank you so much for your help!
 

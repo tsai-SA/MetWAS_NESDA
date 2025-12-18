@@ -10,7 +10,7 @@ Shared files required:
 2) Run MetS_calc.R to apply the weights from our training model to your cohort and produce a metabolic score for each participant in your cohort
 3) Run four predictive models to use the metabolic scores created in the previous step to predict antidepressant exposure status in your cohort
   - antidep_expo ~ scale(AD_MetS) + age + sex + techinical covariates in ALL participants
-  - antidep_expo ~ scale(AD_MetS) + age + sex + techinical covariates in MDD cases only (please add mdd as a column)
+  - antidep_expo ~ scale(AD_MetS) + age + sex + techinical covariates in MDD cases only (please add mdd as a column to the covariate file)
   - antidep_expo ~ scale(AD_MetS) + age + sex + techinical covariates + lifestyle covariates in ALL participants
   - antidep_expo ~ scale(AD_MetS) + age + sex + techinical covariates + lifestyle covariates in MDD cases only \
 *Technical covariates can be variables such as assessment centre, spectrometer (if applicable) \

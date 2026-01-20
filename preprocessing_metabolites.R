@@ -15,7 +15,7 @@ parse <- OptionParser()
 option_list <- list(
   make_option('--cohort', type='character', help="Cohort", action='store'),
   make_option('--metabolites', type='character', help="The filepath for metabolites file", action='store'), 
-  make_option('--probe', type = 'character', help= "The filepath for the list of probe metabolites", action = 'store'),
+  make_option('--ukb_weights', type = 'character', help= "The file path for the metabolite weights file provided by us", action = 'store'),
   make_option('--id_column', type = 'character', default="ID", help = "Column name for identifier column", action = 'store'),
   make_option('--outdir', type = 'character', help = 'The filepath for output directory', action = 'store')
 )
@@ -28,14 +28,14 @@ opt <- parse_args(OptionParser(option_list=option_list), args=args)
 print('Setting up the options')
 cohort <- opt$cohort
 met_filepath=opt$metabolites # metabolite file
-probe_filepath=opt$probe # List of metabolite names
+ukb_weights_filepath=opt$ukb_weights # List of metabolite names
 id_col <- opt$id_column # Vector of identifier column
 out_dir <- opt$outdir
 
 sink(paste0(out_dir, cohort, "_", "_std_metabolites.log"))  #log file
 
 print(paste0('Metabolite file from : ', met_filepath))
-print(paste0('List of probe metabolites from : ', probe_filepath))
+print(paste0('List of probe metabolites from : ', ukb_weights_filepath))
 print(paste0('ID column : ', id_col))
 print(paste0('Output to be saved in : ', out_dir))
 
@@ -51,7 +51,8 @@ if (endsWith(met_filepath, ".rds")){
   stop("Unsupported file format. Please provide a file with .rds format")
 }
 
-met_list <- readRDS(probe_filepath)
+ukb_met_probe <- readRDS(ukb_weights_filepath)
+met_list <- ukb_met_probe$nesda_abbre
 print('Read in files')
 
 ###############################################################################

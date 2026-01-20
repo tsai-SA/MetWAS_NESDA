@@ -11,12 +11,12 @@ library(tidyr)
 library(ggplot2)
 library(tools)
 library(ggpubr)
+library(openxlsx)
+
 
 parse <- OptionParser()
 
 # setting up options for the filepaths to the correct files
-# ukb_weights contain two columns: Metabolites and weights
-# pheno should have two columns: ID and antidep_expo
 
 option_list <- list(
   make_option('--cohort', type='character', help="Cohort", action='store'),
@@ -31,7 +31,7 @@ args = commandArgs(trailingOnly=TRUE)
 opt <- parse_args(OptionParser(option_list=option_list), args=args)
 cohort <- opt$cohort
 std_met_filepath=opt$std_met
-ukb_weights_filepath=opt$ukb_weights # Weights file from GS
+ukb_weights_filepath=opt$ukb_weights # Weights file from UKB
 id_col <- opt$id_column # Vector of identifier columns 
 pheno_filepath=opt$pheno
 outdir <- opt$outdir
@@ -52,7 +52,7 @@ print(paste0('Output to be saved in: ', outdir))
 
 std_met <- readRDS(std_met_filepath) 
 print(paste0('The metabolite file has data for ', nrow(std_met), ' participants and ', std_met %>% select(-ID) %>% ncol(), " Metabolites"))  # Remove ID col
-ukb_weights <- readRDS(ukb_weights_filepath) 
+ukb_weights <- read.xlsx(ukb_weights_filepath) 
 print(paste0('The weights file has weights for ', nrow(weights), ' Metabolites'))
 
 ###############################################################################
@@ -61,21 +61,41 @@ print(paste0('The weights file has weights for ', nrow(weights), ' Metabolites')
 
 ###############################################################################
 
-if(std_met %>% select(-ID) %>% ncol() != nrow(ukb_weights)){
-  print(paste0('Number of non-zero coef metabolites read in for metabolite file (', std_met %>% select(-ID) %>% ncol(),
-               ') does not match the number of weights provided (', nrow(ukb_weights), ')'))
-  # If not all weights included, save the metabolites included in the MS for the cohort 
-  readRDS(std_met %>% select(-ID) %>% colnames(), paste0(outdir,cohort, '_metinMS.txt'))
-  print(paste0('Metabolites used in the MS are saved in: ', outdir, cohort, '_metinMS.txt'))
+metabolites_in_std <- colnames(std_met)[colnames(std_met) != "ID"]
+metabolites_in_weights <- ukb_weights$nesda_abbre  
+
+# Find intersection
+metabolites_to_keep <- intersect(metabolites_in_std, metabolites_in_weights)
+
+if (length(metabolites_to_keep) != length(metabolites_in_std)) {
+  
+  print(paste0(
+    "Number of non-zero coef metabolites read in for metabolite file (",
+    length(metabolites_in_std),
+    ") does not match the number of weights provided (",
+    length(metabolites_in_weights),
+    ")"
+  ))
+  
+  # Save overlapping metabolites
+  writeLines(metabolites_to_keep, paste0(outdir, cohort, "_metinMS.txt"))
+  print(paste0("Metabolites used in the MS are saved in: ", outdir, cohort, "_metinMS.txt"))
+  
 } else {
-  print(paste0('Number of probes read in for std_met matches the number of weights provided: n = ', nrow(ukb_weights)))
+  print(paste0(
+    "Number of probes read in for std_met matches the number of weights provided: n = ", 
+    length(metabolites_in_std)
+  ))
 }
+
+std_met <- std_met %>%
+  select(ID, all_of(metabolites_to_keep))
 
 missing_percentage <- std_met %>% select(-ID) %>%
   summarise_all(~ mean(is.na(.)) * 100) %>%
-  gather(Metabolites, MissingPercentage) %>% arrange(desc(MissingPercentage))
+  gather(nesda_abbre, MissingPercentage) %>% arrange(desc(MissingPercentage))
 
-print(paste0('The metabolite with the highest level of missingness is: ', missing_percentage$Metabolites[1]))
+print(paste0('The metabolite with the highest level of missingness is: ', missing_percentage$nesda_abbre[1]))
 print(paste0('There are ', nrow(missing_percentage %>% filter(MissingPercentage > 5)), ' Metabolites with more than 5% missingness and ',
              nrow(missing_percentage %>% filter(MissingPercentage > 50)), ' with more than 50% missingness'))
 
@@ -89,7 +109,7 @@ missing_hist <- ggplot(missing_percentage, aes(x = MissingPercentage, fill = Mis
   ggtitle(cohort)
 
 missing_plot <- ggplot(missing_percentage %>% filter(MissingPercentage > 50),
-                           aes(x = reorder(Metabolites, -MissingPercentage), y = MissingPercentage)) +
+                           aes(x = reorder(nesda_abbre, -MissingPercentage), y = MissingPercentage)) +
     geom_bar(stat='identity', fill = 'skyblue', color = 'black') + 
     labs(title = paste0(cohort, ': Metabolite missingness in MS'), x = "Metabolite", y = "% Missing") +
     theme_minimal()+
@@ -97,7 +117,7 @@ missing_plot <- ggplot(missing_percentage %>% filter(MissingPercentage > 50),
 
 # Plot the % of missingness against the absolute value of the MS coefficient 
 
-missingness_weights <- merge(missing_percentage, ukb_weights, by = 'Metabolites')
+missingness_weights <- merge(missing_percentage, ukb_weights, by = 'nesda_abbre')
 
 missing_weights_plt <- ggplot(missingness_weights, aes(x = MissingPercentage, y = abs(weights))) + 
   geom_point() + 
@@ -119,18 +139,14 @@ write.table(missing_percentage, paste0(outdir, cohort, '_met_missingness.txt'), 
 # Calculate the metabolic scores 
 
 ###############################################################################
-print('Change std_met colnames into UKB ID format')
-rename_vec <- setNames(ukb_weights$ukb_id, ukb_weights$nesda_abbre)
-std_met <- std_met %>%
-  rename(any_of(rename_vec))  
 
 print('Converting std_met to long format')
 long_std_met <- std_met %>% 
   pivot_longer(-c(all_of(id_col)), 
-               names_to = "Metabolites", 
+               names_to = "nesda_abbre", 
                values_to= "Mval")
 print('Merging with the weights')
-long_std_met <- merge(long_std_met, ukb_weights, by = 'Metabolites')
+long_std_met <- merge(long_std_met, ukb_weights, by = 'nesda_abbre')
 
 print('Calculating the metabolic scores')
 
@@ -225,4 +241,5 @@ print(paste0('Saving the metabolic score to ', outfile))
 colnames(MetS)[2] <- 'AD_MetS'
 saveRDS(MetS, outfile)
 sink()
+
 

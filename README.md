@@ -23,7 +23,7 @@ Please refer to the following information for further details and please let us 
 The metabolic scores were trained using standardised metabolic levels using z-score standardisation. Therefore we would like the metabolic scores to be calculated also using standardised metabolic levels.
 
 The R script preprocessing_metabolites.R will read :
-1) The dataframe (as .rds format) containing your cohort's metabolite levels, it should have rows as participant ID and columns as metabolite names.
+1) The dataframe (as .rds format) containing your cohort's metabolite levels, it should have rows as participant ID and columns as metabolite names. The column names should be in NESDA’s abbreviated metabolite names as in probe_list.xlsx
 2) The probe_list.xlsx file which contains a list of probe metabolites provided by us
 Then the R script will filter your cohort's metabolites to the probe metabolites from our training model and scale them
 
@@ -47,7 +47,7 @@ Rscript preprocessing_metabolites.R \
 ## Calculate metabolic scores
 The R script MetS_calc.R will read: 
 1) The _std_metabolites.rds file from preprocessing_metabolites.R,
-2) The LASSO weights provided by us
+2) The UKB_AD_met_weights.xlsx file provided by us
 3) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
 Then, it will calculate metabolic score for each participant.
 
@@ -55,7 +55,7 @@ Arguments:
 --cohort : Cohort name, e.g 'UKB' or 'NESDA' \
 --std_met : The file path for the standardised metabolite file from preprocessing_metabolites.R \
 --id_column : The column name of the identifier column (default == ID) \
---ukb_weights : The file path for the metabolite weights file provided by us \
+--ukb_weights : The file path to the UKB_AD_met_weights.xlsx \
 --pheno : The file path to the antidepressant exposure phenotype file for your cohort (rds format). The file should have two columns: ID and antidep_expo with antidep_expo coded as 0 (no exposure) and 1 (exposure) \
 --outdir : The directory where the results and graphs will be saved 
 
@@ -74,7 +74,7 @@ Rscript MetS_calc.R \
 The R script basic_model_all.R will read:
 1) The _AD_MetS.rds file from MetS_calc.R output
 2) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
-3) A .rds file with ID and the **basic covariates** including sex, age, techinical covariates such as assessment_centre and/or spectrometer (if applicable) as columns.
+3) A .rds file with ID and the **basic covariates** including sex, age, techinical covariates such as assessment_centre and/or spectrometer (if applicable) as columns. The script will remove mdd from the covariate dataframe.
 
 Then the metabolic scores created in the previous step will be used to predict antidepressant exposure status in your cohort. 
 
@@ -102,7 +102,7 @@ Rscript basic_model_all.R \
 ```
 
 ## Predictive model 2 : basic model in MDD cases only
-The basic_model_mdd.R script is similar to model 1, but with additional mdd column (MDD diagnosis) and it will filter out participants with no MDD diagnosis
+The basic_model_mdd.R script is similar to model 1, but it will filter out participants with no MDD diagnosis
 1) The _AD_MetS.rds file from MetS_calc.R output
 2) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
 3) A .rds file with ID and the **basic covariates** including sex, age, mdd, techinical covariates such as assessment_centre and/or spectrometer (if applicable) as columns. The mdd column should be coded into 0/1 (1 = mdd, 0 = controls), the basic_model_mdd.R script will filter out the controls.

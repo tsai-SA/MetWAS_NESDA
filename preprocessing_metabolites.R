@@ -123,7 +123,7 @@ ggsave(filename=paste0(out_dir, cohort, "_std_unstd_metabolites.png"),met_dists,
 
 ###############################################################################
 
-outfile <- paste0(out_dir, cohort, "_std_metabolites.rds")
+outfile <- paste0(out_dir, "/", cohort, "_std_metabolites.rds")
 saveRDS(met_std, outfile)
 sink()
 

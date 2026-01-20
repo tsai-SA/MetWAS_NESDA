@@ -146,6 +146,13 @@ phenotype_summary <- function(phenotype, file) {
   # -------------------------
   # Sex counts + percentages
   # -------------------------
+  file <- file %>%
+  mutate(
+    sex = tolower(sex),                 # female / male
+    sex = factor(sex, levels = c("female", "male"))
+  )
+
+  
   sex_tbl <- file %>%
     group_by(across(all_of(c(phenotype, "sex")))) %>%
     summarise(count = n(), .groups = "drop") %>%
@@ -171,8 +178,8 @@ phenotype_summary <- function(phenotype, file) {
       N,
       age,
       bmi,
-      Sex_Female,
-      Sex_Male,
+      Sex_female,
+      Sex_male,
       AD_MetS
     )
 

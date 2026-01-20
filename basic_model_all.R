@@ -90,6 +90,7 @@ print(paste0('Read in the Antidepressant exposure phenotype for ', cohort, scrip
                     filter(antidep_expo==0))))
 
 all_covs <- readRDS(basic_covs_fp)
+all_covs$mdd <- NULL #remove MDD col
 
 print(paste0("Covariates read in ", paste(colnames(all_covs %>% dplyr::select(-all_of(id_col))), collapse = ", ")))
 print(paste0("Covariates data type:\n", paste(capture.output(str(all_covs)), collapse = "\n")))

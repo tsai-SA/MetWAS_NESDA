@@ -10,12 +10,9 @@ library(readr)
 library(tidyr)
 library(ggplot2)
 library(tools)
-library(lme4)
 library(tibble)
 library(pROC)
-library(caret)
-library(PRROC)             
-
+library(PRROC) 
 
 parse <- OptionParser()
 

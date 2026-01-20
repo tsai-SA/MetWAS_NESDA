@@ -24,7 +24,7 @@ The metabolic scores were trained using standardised metabolic levels using z-sc
 
 The R script preprocessing_metabolites.R will read :
 1) The dataframe (as .rds format) containing your cohort's metabolite levels, it should have rows as participant ID and columns as metabolite names.
-2) The probe_list.rds file which contains a list of probe metabolites provided by us
+2) The probe_list.xlsx file which contains a list of probe metabolites provided by us
 Then the R script will filter your cohort's metabolites to the probe metabolites from our training model and scale them
 
 Arguments:

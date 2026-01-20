@@ -1,7 +1,7 @@
 ###############################################################################
 
 # Demographic information about sample from the cohort 
-# age, sex, bmi, mdd
+# age, sex, bmi, mdd, antidepressant exposure, metabolic scores
 
 ###############################################################################
 
@@ -13,6 +13,7 @@ library(data.table)
 library(dplyr)
 library(optparse)
 library(readr)
+library(openxlsx)
 library(tidyr)
 
 parse <- OptionParser()
@@ -263,9 +264,10 @@ if('mdd' %in% colnames(demographics_pheno)){
 
 ###############################################################################
 
-write.table(demo_summary, paste0(outdir, cohort, '_demo_summary.tsv'), sep = '\t',quote = F, row.names = F)
+write.xlsx(demo_summary, paste0(outdir, cohort, '_demo_summary.xlsx'))
 print(paste0('Saved the demographic summary to ', cohort, '_demo_summary.txt'))
 
 sink()
+
 
 

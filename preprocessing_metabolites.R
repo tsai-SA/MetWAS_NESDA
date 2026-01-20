@@ -34,7 +34,7 @@ probe_filepath=opt$probe # List of metabolite names
 id_col <- opt$id_column # Vector of identifier column
 out_dir <- opt$outdir
 
-sink(paste0(out_dir, cohort, "_", "_std_metabolites.log"))  #log file
+sink(paste0(out_dir, cohort, "_std_metabolites.log"))  #log file
 
 print(paste0('Metabolite file from : ', met_filepath))
 print(paste0('List of probe metabolites from : ', probe_filepath))
@@ -114,7 +114,7 @@ met_dists <- ggplot(met_both, aes(x = Mval, fill = Metabolites)) +
   facet_grid(Values~Metabolites) +
   ggtitle(paste0(cohort, ': Random sample of metabolites - standardisation'))
 
-ggsave(filename=paste0(out_dir, cohort, "_", "_std_unstd_metabolites.png"),met_dists, 
+ggsave(filename=paste0(out_dir, cohort, "_std_unstd_metabolites.png"),met_dists, 
        width = 8, height = 6, device='png', dpi=300)
 
 ###############################################################################
@@ -123,8 +123,10 @@ ggsave(filename=paste0(out_dir, cohort, "_", "_std_unstd_metabolites.png"),met_d
 
 ###############################################################################
 
-outfile <- paste0(out_dir, cohort, "_", "_std_metabolites.rds")
+outfile <- paste0(out_dir, cohort, "_std_metabolites.rds")
 saveRDS(met_std, outfile)
 sink()
+
+
 
 

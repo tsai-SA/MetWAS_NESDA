@@ -39,14 +39,14 @@ Example:
 Rscript preprocessing_metabolites.R \
   --cohort "UKB" \
   --metabolites "/Users/Desktop/test_met_data.rds" \
-  --probe "/Users/Desktop/probes_list.rds" \
+  --probe "/Users/Desktop/probe_list.xlsx" \
   --id_column "ID" \
   --outdir "/Users/Desktop/"
 ```
 
 ## Calculate metabolic scores
 The R script MetS_calc.R will read: 
-1) The _mrs_preproc_metabolites.rds file from preprocessing_metabolites.R,
+1) The _std_metabolites.rds file from preprocessing_metabolites.R,
 2) The LASSO weights provided by us
 3) The antidepressant exposure phenotype in your cohort (0 = no exposure, 1 = exposure), this file should be .rds format with two columns, ID and antidep_expo
 Then, it will calculate metabolic score for each participant.
@@ -63,9 +63,9 @@ Example:
 ```bash
 Rscript MetS_calc.R \
 --cohort "UKB" \
---std_met "/Users/Desktop/UKB_mrs_preproc_metabolites.rds" \
+--std_met "/Users/Desktop/UKB_std_metabolites.rds" \
 --id_column "ID" \
---ukb_weights "/Users/Desktop/lasso_coef.rds" \
+--ukb_weights "/Users/Desktop/UKB_AD_met_weights.xlsx" \
 --pheno "/Users/Desktop/pheno.rds" \
 --outdir "/Users/Desktop/"
 ```

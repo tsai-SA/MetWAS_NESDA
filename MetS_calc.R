@@ -119,7 +119,7 @@ write.table(missing_percentage, paste0(outdir, cohort, '_met_missingness.txt'), 
 # Calculate the metabolic scores 
 
 ###############################################################################
-print('Change std_met colnames into UKB ID format)
+print('Change std_met colnames into UKB ID format')
 rename_vec <- setNames(ukb_weights$ukb_id, ukb_weights$nesda_abbre)
 std_met <- std_met %>%
   rename(any_of(rename_vec))  

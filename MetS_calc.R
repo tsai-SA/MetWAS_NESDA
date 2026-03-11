@@ -62,7 +62,7 @@ print(paste0('The weights file has weights for ', nrow(weights), ' Metabolites')
 
 ###############################################################################
 
-metabolites_in_std <- colnames(std_met)[colnames(std_met) != "ID"]
+metabolites_in_std <- colnames(std_met)[colnames(std_met) != "id_col"]
 metabolites_in_weights <- ukb_weights$ext_cohort_abbre  
 
 # Find intersection
@@ -90,7 +90,7 @@ if (length(metabolites_to_keep) != length(metabolites_in_std)) {
 }
 
 std_met <- std_met %>%
-  select(ID, all_of(metabolites_to_keep))
+  select(id_col, all_of(metabolites_to_keep))
 
 missing_percentage <- std_met %>% select(-all_of(id_col)) %>%
   summarise_all(~ mean(is.na(.)) * 100) %>%

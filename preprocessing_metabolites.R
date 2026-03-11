@@ -54,7 +54,7 @@ if (endsWith(met_filepath, ".rds")){
 }
 
 ukb_met_probe <- read.xlsx(probe_filepath)
-met_list <- ukb_met_probe$nesda_abbre
+met_list <- ukb_met_probe$ext_cohort_abbre
 print('Read in files')
 
 ###############################################################################
